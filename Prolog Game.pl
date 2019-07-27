@@ -9,7 +9,19 @@ start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retrac
 	 assert(enemy(no)),
 	 write('Starting of the story'),nl,town.
 
-town :- write('Please choose a place to go'),nl,
+town :- write('          | N |          '),nl,
+	write('          |   |          '),nl,
+	write('          |   |          '),nl,
+	write('          |   |          '),nl,
+	write('          |   |          '),nl,
+	write('----------     ----------'),nl,
+	write('I          Town         F'),nl,
+	write('----------     ----------'),nl,
+	write('          |   |          '),nl,
+	write('          |   |          '),nl,
+	write('          |   |          '),nl,
+	write('          |   |          '),nl,nl,
+	write('Please choose a place to go (up/left/right)'),nl,
 	write('Your choice : '),read(X),location(X).
 
 location(up) :- write('You choose neutral faction, Good Luck'),nl,neutral.
