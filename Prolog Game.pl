@@ -24,3 +24,8 @@ fire :- write('Stay tuned').
 
 %Battle
 
+%NPC
+
+%Item
+
+%Inventory
