@@ -22,7 +22,6 @@ town :- write('          | N |          '),nl,
 	write('          |   |          '),nl,
 	write('          |   |          '),nl,nl,
 	write('Please choose a place to go (up/left/right)'),nl,
-	write('Please choose a place to go (up/left/right)'),nl,
 	write('Your choice : '),read(X),location(X).
 
 location(up) :- write('You choose neutral faction, Good Luck'),nl,neutral.
