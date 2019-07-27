@@ -1,0 +1,1 @@
+start :- write('Starting of the story').
