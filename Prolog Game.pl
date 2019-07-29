@@ -1,7 +1,7 @@
 start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retractall(hp(_)),
 	 assert(hp(fresh)),assert(score(0)),assert(weapon(woodenspatula)),
-	 assert(item(potion,3)),
-	 assert(item(blowtorch,0)),
+	 assert(item(potion,5)),
+	 assert(item(blowtorch,3)),
 	 assert(item(pepper,0)),
 	 assert(item(mt,no)),
 	 assert(item(co,no)),
@@ -47,9 +47,19 @@ deducthp :- hp(die),!.
 battlestatus :- hp(X), write('Player Hp : '),write(X),nl,
 		enemy(Name,Hp), write(Name), write(' Hp : '),write(Hp),nl.
 
+%item
+use(potion) :- item(potion,0),nl, write('You have no tomato juice left'),nl.
+use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(fresh)),nl,
+	       write('1 tomato juice used, player health recovered to fresh !'),nl,
+	       write(NewX), write(' tomato juice left'),nl.
+use(blowtorch) :- item(blowtorch,0),nl, write('You have no blowtorch left'),nl.
+use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
+		  enemy(Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_)), assert(enemy(Name,Newhp)),nl,
+		  write('You used blowtorch on the enemy, 2 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
 
 %Monster
-enemyattack(meatball) :- write('Meatball attack!   Player hp - 1'), nl,nl, deducthp. 
+enemyattack(_,X) :- X =< 20, write('You managed to dogde the monster attack'),nl,nl.
+enemyattack(meatball,X) :- X > 20, write('Meatball attack!   Player hp - 1'), nl,nl, deducthp. 
 
 %Weapon
 weaponattack(woodenspatula) :- random(1,101,X), woodenspatula(X).
@@ -59,11 +69,14 @@ woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, ene
 %Battle
 battle :- hp(X), enemy(_,Y), X \= die, Y > 0, write('What will you do next? :'), read(Z), action(Z), battle; result.
 
-action(attack) :- weapon(X), weaponattack(X),nl,battlestatus,nl, enemy(Name,Hp), Hp > 0, enemyattack(Name),battlestatus,nl.
+action(attack) :- weapon(X), weaponattack(X),nl,battlestatus,nl, enemy(Name,Hp), Hp > 0,random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- enemy(_,Hp), Hp =< 0,!.
+action(potion) :- use(potion), nl,write('What will you do next? : '),read(X),action(X).
+action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,Hp), Hp > 0, write('What will you do next? :'),read(X),action(X).
+action(blowtorch) :- enemy(_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
-result :- hp(die), write('You die'),nl.
+result :- hp(die), write('You die'),retractall(enemy(_,_)),nl.
 result :- enemy(Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl ,retractall(enemy(_,_)).
 
 %Utility
@@ -74,11 +87,11 @@ help :- write('List of helpful command'),nl,
 	write('pepper. - only can use on enemy'),!.
 
 itemlist :- weapon(X), write('Weapon : '),write(X),nl,
-	    item(potion,Y), write('Tomato juice   x '),write(Y),nl,
-	    item(blowtorch,Z), write('Blowtorch   x '),write(Z),nl,
-	    item(pepper,A), write('Pepper   x '),write(A),nl,
-	    ((item(mt,yes), write('Meat Tenderizer'),nl);(item(mt,no),!)),
-	    ((item(co,yes), write('Can Opener'),nl);(item(co,no),!)),
-	    ((item(corkscrew,yes), write('Corkscrew'),nl);(item(corkscrew,no),!)),!.
+	    (item(potion,Y),Y > 0, write('Tomato juice   x '),write(Y),nl;!),
+	    (item(blowtorch,Z),Z > 0, write('Blowtorch   x '),write(Z),nl;!),
+	    (item(pepper,A),A > 0, write('Pepper   x '),write(A),nl;!),
+	    (item(mt,yes), write('Meat Tenderizer'),nl;!),
+	    (item(co,yes), write('Can Opener'),nl;!),
+	    (item(corkscrew,yes), write('Corkscrew'),nl;!),!.
 
-testevent :- write('A wild meatball appears !'),assert(enemy(meatball,2)),nl, battle.
+testevent :- write('A wild meatball appears !'),assert(enemy(meatball,6)),nl,nl,battlestatus,nl, battle.
