@@ -74,6 +74,7 @@ enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),w
 weaponattack(woodenspatula) :- random(1,101,X), woodenspatula(X).
 woodenspatula(X) :- X =< 35,nl, write('Your attack missed!'),nl.
 woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 
 %Battle
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle; result.
@@ -109,3 +110,6 @@ fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatba
 fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
 fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
+
+%For test purpose
+give(fryingpan) :- retract(weapon(_)), assertz(weapon(fryingpan)).
