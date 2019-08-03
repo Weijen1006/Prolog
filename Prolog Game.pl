@@ -1,5 +1,5 @@
 start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retractall(hp(_)),retractall(sneeze(_)),
-	 assert(hp(fresh)),assert(score(0)),assert(weapon(woodenspatula)),
+	 assert(hp(healthy)),assert(score(0)),assert(weapon(woodenspatula)),
 	 assert(item(potion,5)),
 	 assert(item(blowtorch,3)),
 	 assert(item(pepper,3)),
@@ -40,6 +40,7 @@ ice :- write('Stay tuned').
 fire :- write('Stay tuned').
 
 %HP
+deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
 deducthp :- hp(fresh), retractall(hp(_)), assert(hp(raw)).
 deducthp :- hp(raw), retractall(hp(_)),assert(hp(spoil)).
 deducthp :- hp(spoil), retractall(hp(_)), assert(hp(rotten)).
@@ -51,7 +52,7 @@ battlestatus :- hp(X), write('Player Hp : '),write(X),nl,
 
 %item
 use(potion) :- item(potion,0),nl, write('You have no tomato juice left'),nl.
-use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(fresh)),nl,
+use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(healthy)),nl,
 	       write('1 tomato juice used, player health recovered to fresh !'),nl,
 	       write(NewX), write(' tomato juice left'),nl.
 use(pepper) :- item(pepper,0),nl,write('You have no pepper left'),nl.
@@ -63,11 +64,11 @@ use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowt
 		  write('You used blowtorch on the enemy, 2 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
 
 %Monster
-enemyattack(_,X) :- X =< 20, write('You managed to dogde the monster attack'),nl,nl.
-enemyattack('Meatball',X) :- X > 20, write('Meatball attack!   Player hp - 1'), nl,nl, deducthp.
-enemyattack('Tarrot',X) :- X > 20, write('Tarrot attack! Player hp - 1'),nl,nl,deducthp.
+enemyattack('Meatball',X) :- X > 40, write('Meatball attack!   Player hp - 1'), nl,nl, deducthp.
+enemyattack('Tarrot',X) :- X > 15, write('Tarrot attack! Player hp - 1'),nl,nl,deducthp.
 enemyattack('Crying Onion',X) :- X> 20, write('Crying Onion makes you sad! Player hp - 1 from sadness'),nl,nl,deducthp.
-enemyattack('Caesar Salad', X) :- X > 20, write('Caesar Salad attacks! Player hp - 1'),nl,nl,deducthp. 
+enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks! Player hp - 2'),nl,nl,deducthp,deducthp.
+enemyattack(_,_) :- write('You managed to dodge the monster attack'),nl,nl. 
 
 %Weapon
 weaponattack(woodenspatula) :- random(1,101,X), woodenspatula(X).
@@ -105,6 +106,6 @@ itemlist :- weapon(X), write('Weapon : '),write(X),nl,
 	    (item(corkscrew,yes), write('Corkscrew'),nl;!),!.
 
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
-fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',6)),nl,nl,battlestatus,nl,battle.
+fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
 fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
-fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',6)),nl,nl,battlestatus,nl,battle.
+fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
