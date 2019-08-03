@@ -53,11 +53,11 @@ battlestatus :- hp(X), write('Player Hp : '),write(X),nl,
 %item
 use(potion) :- item(potion,0),nl, write('You have no tomato juice left'),nl.
 use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(healthy)),nl,
-	       write('1 tomato juice used, player health recovered to fresh !'),nl,
+	       write('1 tomato juice used, player health recovered to healthy !'),nl,
 	       write(NewX), write(' tomato juice left'),nl.
 use(pepper) :- item(pepper,0),nl,write('You have no pepper left'),nl.
 use(pepper) :- item(pepper,X), X > 0, NewX is X - 1, retractall(item(pepper,_)), assert(item(pepper,NewX)), retractall(sneeze(_)),assert(sneeze(yes)),nl,enemy(_,Name,_),
-	       write('1 pepper used, looks like '),write(Name),write(' is about to sneeze !'),nl.
+	       write('1 pepper used, '),write(NewX),write(' pepper left'),nl,write('Looks like '),write(Name),write(' is about to sneeze !'),nl.
 use(blowtorch) :- item(blowtorch,0),nl, write('You have no blowtorch left'),nl.
 use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
 		  enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
@@ -68,7 +68,7 @@ enemyattack('Meatball',X) :- X > 40, write('Meatball attack!   Player hp - 1'), 
 enemyattack('Tarrot',X) :- X > 15, write('Tarrot attack! Player hp - 1'),nl,nl,deducthp.
 enemyattack('Crying Onion',X) :- X> 20, write('Crying Onion makes you sad! Player hp - 1 from sadness'),nl,nl,deducthp.
 enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks! Player hp - 2'),nl,nl,deducthp,deducthp.
-enemyattack(_,_) :- write('You managed to dodge the monster attack'),nl,nl. 
+enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),write(' attack'),nl,nl. 
 
 %Weapon
 weaponattack(woodenspatula) :- random(1,101,X), woodenspatula(X).
@@ -78,7 +78,7 @@ woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, ene
 %Battle
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle; result.
 
-action(attack) :- weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
 action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
 action(potion) :- use(potion), nl,write('What will you do next? : '),read(X),action(X).
@@ -88,7 +88,7 @@ action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl.
-result :- enemy(_,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl ,retractall(enemy(_,_,_)).
+result :- enemy(_,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl ,retractall(enemy(_,_,_)),!.
 
 %Utility
 help :- write('List of helpful command'),nl,
