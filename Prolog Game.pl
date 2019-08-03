@@ -1,11 +1,12 @@
-start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retractall(hp(_)),
+start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retractall(hp(_)),retractall(sneeze(_)),
 	 assert(hp(fresh)),assert(score(0)),assert(weapon(woodenspatula)),
 	 assert(item(potion,5)),
 	 assert(item(blowtorch,3)),
-	 assert(item(pepper,0)),
+	 assert(item(pepper,3)),
 	 assert(item(mt,no)),
 	 assert(item(co,no)),
 	 assert(item(corkscrew,no)),
+	 assert(sneeze(no)),
 	 write('Starting of the story'),nl,town.
 
 town :- write('          | N |          '),nl,
@@ -53,6 +54,9 @@ use(potion) :- item(potion,0),nl, write('You have no tomato juice left'),nl.
 use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(fresh)),nl,
 	       write('1 tomato juice used, player health recovered to fresh !'),nl,
 	       write(NewX), write(' tomato juice left'),nl.
+use(pepper) :- item(pepper,0),nl,write('You have no pepper left'),nl.
+use(pepper) :- item(pepper,X), X > 0, NewX is X - 1, retractall(item(pepper,_)), assert(item(pepper,NewX)), retractall(sneeze(_)),assert(sneeze(yes)),nl,enemy(_,Name,_),
+	       write('1 pepper used, looks like '),write(Name),write(' is about to sneeze !'),nl.
 use(blowtorch) :- item(blowtorch,0),nl, write('You have no blowtorch left'),nl.
 use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
 		  enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
@@ -73,9 +77,11 @@ woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, ene
 %Battle
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle; result.
 
-action(attack) :- weapon(X), weaponattack(X),nl,battlestatus,nl, enemy(_,Name,Hp), Hp > 0,random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+action(attack) :- weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
 action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
 action(potion) :- use(potion), nl,write('What will you do next? : '),read(X),action(X).
+action(pepper) :- use(pepper), nl,write('What will you do next? : '),read(X),action(X).
 action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, write('What will you do next? :'),read(X),action(X).
 action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
