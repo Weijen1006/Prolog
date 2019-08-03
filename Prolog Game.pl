@@ -72,6 +72,7 @@ enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),w
 
 %Weapon
 weaponattack(woodenspatula) :- random(1,101,X), woodenspatula(X).
+weaponattack(fryingpan) :- fryingpan.
 woodenspatula(X) :- X =< 35,nl, write('Your attack missed!'),nl.
 woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
