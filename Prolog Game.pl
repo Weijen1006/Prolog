@@ -93,7 +93,7 @@ action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl.
-result :- enemy(_,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl ,retractall(enemy(_,_,_)),!.
+result :- random(1,101,X),enemy(_,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl ,retractall(enemy(_,_,_)),loot(X),nl,!.
 
 %Utility
 help :- write('List of helpful command'),nl,
@@ -109,6 +109,9 @@ itemlist :- weapon(X), write('Weapon : '),write(X),nl,
 	    (item(mt,yes), write('Meat Tenderizer'),nl;!),
 	    (item(co,yes), write('Can Opener'),nl;!),
 	    (item(corkscrew,yes), write('Corkscrew'),nl;!),!.
+	    
+loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
+loot(_).
 
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
 fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
