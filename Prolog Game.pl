@@ -45,7 +45,7 @@ deducthp :- hp(fresh), retractall(hp(_)), assert(hp(raw)).
 deducthp :- hp(raw), retractall(hp(_)),assert(hp(spoil)).
 deducthp :- hp(spoil), retractall(hp(_)), assert(hp(rotten)).
 deducthp :- hp(rotten), retractall(hp(_)), assert(hp(die)).
-deducthp :- hp(die),!.
+deducthp :- hp(dead),!.
 
 battlestatus :- hp(X), write('Player Hp : '),write(X),nl,
 		enemy(_,Name,Hp), write(Name), write(' Hp : '),write(Hp),nl.
