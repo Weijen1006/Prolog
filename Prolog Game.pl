@@ -59,7 +59,10 @@ use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowt
 
 %Monster
 enemyattack(_,X) :- X =< 20, write('You managed to dogde the monster attack'),nl,nl.
-enemyattack(meatball,X) :- X > 20, write('Meatball attack!   Player hp - 1'), nl,nl, deducthp. 
+enemyattack('Meatball',X) :- X > 20, write('Meatball attack!   Player hp - 1'), nl,nl, deducthp.
+enemyattack('Tarrot',X) :- X > 20, write('Tarrot attack! Player hp - 1'),nl,nl,deducthp.
+enemyattack('Crying Onion',X) :- X> 20, write('Crying Onion makes you sad! Player hp - 1 from sadness'),nl,nl,deducthp.
+enemyattack('Caesar Salad', X) :- X > 20, write('Caesar Salad attacks! Player hp - 1'),nl,nl,deducthp. 
 
 %Weapon
 weaponattack(woodenspatula) :- random(1,101,X), woodenspatula(X).
@@ -94,4 +97,7 @@ itemlist :- weapon(X), write('Weapon : '),write(X),nl,
 	    (item(co,yes), write('Can Opener'),nl;!),
 	    (item(corkscrew,yes), write('Corkscrew'),nl;!),!.
 
-fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,meatball,6)),nl,nl,battlestatus,nl, battle.
+fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
+fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',6)),nl,nl,battlestatus,nl,battle.
+fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
+fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',6)),nl,nl,battlestatus,nl,battle.
