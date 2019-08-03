@@ -39,7 +39,8 @@ ice :- write('Stay tuned').
 fire :- write('Stay tuned').
 
 %HP
-deducthp :- hp(fresh), retractall(hp(_)), assert(hp(spoil)).
+deducthp :- hp(fresh), retractall(hp(_)), assert(hp(raw)).
+deducthp :- hp(raw), retractall(hp(_)),assert(hp(spoil)).
 deducthp :- hp(spoil), retractall(hp(_)), assert(hp(rotten)).
 deducthp :- hp(rotten), retractall(hp(_)), assert(hp(die)).
 deducthp :- hp(die),!.
