@@ -61,7 +61,7 @@ write('    ****** **   ** **   ** *******          ******     *    ******* **  *
 theend :- nl.
 
 %Neutral faction
-neutral :- write('Stay tuned').
+neutral :- fight(30).
 
 %Ice faction
 ice :- write('Stay tuned').
@@ -126,7 +126,7 @@ action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl.
-result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,!.
+result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 %Utility
 help :- write('List of helpful command'),nl,
@@ -145,6 +145,14 @@ itemlist :- weapon(X), write('Weapon : '),write(X),nl,
 	    
 loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,Y), NewY is Y +1, retractall(item(potion,_)), assert(item(potion,NewY)).
 loot(_).
+
+fight(X) :- X =< 30, random(1,5,Y),encounter(Y).
+fight(_) :- write('Boss fight time!').
+
+encounter(1) :- fightmeatball.
+encounter(2) :- fighttarrot.
+encounter(3) :- fightonion.
+encounter(4) :- fightsalad.
 
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
 fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
