@@ -1,5 +1,5 @@
-start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retractall(hp(_)),retractall(sneeze(_)),
-	 assert(hp(healthy)),assert(score(0)),assert(weapon('Wooden Spatula')),
+start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),
+	 assert(hp(healthy)),assert(weapon('Wooden Spatula')),
 	 assert(item(potion,5)),
 	 assert(item(blowtorch,3)),
 	 assert(item(pepper,3)),
@@ -7,7 +7,24 @@ start :- retractall(item(_,_)),retractall(weapon(_)),retractall(score(_)),retrac
 	 assert(item(co,no)),
 	 assert(item(corkscrew,no)),
 	 assert(sneeze(no)),
-	 write('Starting of the story'),nl,town.
+	 assert(playerScore(0)),
+	 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,town.
+
+story :- write('This story follows the adventure of Clemen Wohlfahrt, an amazing chef from the land of Redfields.'), get_single_char(_),nl,
+	 write('He was born with only one hand due to an accident at birth causing him a big disability in life and so on,but that did not stop him from achieving his dream at all.'), get_single_char(_),nl,
+	 write('And there he goes, on his way to open a new restaurant in a place called Calamity Town...'),get_single_char(_),nl,
+	 write('Breath in and breath out Clemen, you got this long journey ahead of you, said Clemen'),get_single_char(_),nl,
+	 write('You will be controlling Mr. Clemen here and guide him through out this adventure...'),get_single_char(_),nl,
+	 write('This... tasty adventure of his...'),get_single_char(_),nl.
+
+poster :- 
+write('*********    *****    ******** ********* *****     *****'),nl,
+write('*       *   *     *   *      * *       *  *   *   *   *'),nl,
+write('***   ***  *  ***  *  *  ***** ***   ***   *    *    *'),nl,
+write('  *   *   *         * ****** *   *   *      *      *'),nl,
+write('  *   *   *   ***   * ****** *   *   *      *      *'),nl,
+write('  *   *   *  *   *  * *      *   *   *      *      *'),nl,
+write('  *****    **     **  ********   *****      ********').
 
 town :- write('          | N |          '),nl,
 	write('          |   |          '),nl,
@@ -109,7 +126,7 @@ action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl.
-result :- enemy(_,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl, random(1,101,X),loot(X),retractall(enemy(_,_,_)),nl,!.
+result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,!.
 
 %Utility
 help :- write('List of helpful command'),nl,
@@ -133,6 +150,11 @@ fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatba
 fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
 fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
+
+score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,write('Total score is '),write(Total).
+score(ice).
+score(fire).
+
 
 %For test purpose
 give(fryingpan) :- retract(weapon(_)), assertz(weapon('Frying Pan')).
