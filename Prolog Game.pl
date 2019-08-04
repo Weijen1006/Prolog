@@ -143,7 +143,7 @@ itemlist :- weapon(X), write('Weapon : '),write(X),nl,
 	    (item(co,yes), write('Can Opener'),nl;!),
 	    (item(corkscrew,yes), write('Corkscrew'),nl;!),!.
 	    
-loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,Y), NewY i Y +1, retractall(item(potion,_)), assert(item(potion,NewY)).
+loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,Y), NewY is Y +1, retractall(item(potion,_)), assert(item(potion,NewY)).
 loot(_).
 
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
