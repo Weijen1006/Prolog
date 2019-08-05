@@ -63,6 +63,14 @@ theend :- nl.
 %Neutral faction
 neutral :- fight(30).
 
+fight(X) :- X =< 30, random(1,5,Y),encounter(Y).
+fight(_) :- random(1,31,X), event(X),nl, write('Boss fight time!'),neutralbossfight.
+
+encounter(1) :- fightmeatball.
+encounter(2) :- fighttarrot.
+encounter(3) :- fightonion.
+encounter(4) :- fightsalad.
+
 crossroad(left) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
 crossroad(right) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
 crossroad(_) :- write('Please enter only left and right!'), read(X), crossroad(X).
@@ -103,6 +111,8 @@ enemyattack('Tarrot',X) :- X > 15,X =< 45, write('Tarrot card attack! Player hp 
 enemyattack('Tarrot',X) :- X > 45, write('Tarrot pull out its regen card ! Tarrot hp + 1'),nl,nl,enemy(Type,Name,Hp), Newhp is Hp + 1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 enemyattack('Crying Onion',X) :- X> 20, write('Crying Onion makes you sad! Player hp - 1 from sadness'),nl,nl,deducthp.
 enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks! Player hp - 2'),nl,nl,deducthp,deducthp.
+enemyattack('Spaghetti Regretti',_) :- round(X) ,X \= 4, write('Spaghetti Regretti attack! Player hp - 1'),nl,nl,deducthp,retractall(round(_)), NewX is X + 1, assert(round(NewX)).
+enemyattack('Spaghetti Regretti',_) :- round(4), write('Spaghetti Regretti perform a double attack! Player hp - 2'),nl,nl,deducthp,deducthp,retractall(round(_)), assert(round(1)).
 enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),write(' attack'),nl,nl. 
 
 %Weapon
@@ -119,18 +129,12 @@ fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp,
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle.
 battle :- result.
 
-fight(X) :- X =< 30, random(1,5,Y),encounter(Y).
-fight(_) :- random(1,31,X), event(X), write('Boss fight time!').
-
-encounter(1) :- fightmeatball.
-encounter(2) :- fighttarrot.
-encounter(3) :- fightonion.
-encounter(4) :- fightsalad.
-
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
 fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
 fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
+neutralbossfight :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(neutral,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
+
 
 action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
@@ -142,6 +146,7 @@ action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl,gameover.
+result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retractall(enemy(_,_,_)).
 result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 %Utility
@@ -163,9 +168,13 @@ loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,Y), N
 loot(_).
  
 
-score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,write('Total score is '),write(Total).
+score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,scorestatus.
 score(ice).
 score(fire).
+
+scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
+	       playerScore(Y), write('Player Score : '), write(Y),nl.
+
 
 event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,write('Your choice: '),read(D),crossroad(D).
 event(_) :- write('You continued your journey without any interesting events happening...').
