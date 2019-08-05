@@ -63,6 +63,10 @@ theend :- nl.
 %Neutral faction
 neutral :- fight(30).
 
+crossroad(left) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
+crossroad(right) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
+crossroad(_) :- write('Please enter only left and right!'), read(X), crossroad(X).
+
 %Ice faction
 ice :- write('Stay tuned').
 
@@ -115,6 +119,19 @@ fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp,
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle.
 battle :- result.
 
+fight(X) :- X =< 30, random(1,5,Y),encounter(Y).
+fight(_) :- random(1,31,X), event(X), write('Boss fight time!').
+
+encounter(1) :- fightmeatball.
+encounter(2) :- fighttarrot.
+encounter(3) :- fightonion.
+encounter(4) :- fightsalad.
+
+fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
+fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
+fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
+fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
+
 action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
 action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
@@ -144,23 +161,14 @@ itemlist :- weapon(X), write('Weapon : '),write(X),nl,
 	    
 loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,Y), NewY is Y +1, retractall(item(potion,_)), assert(item(potion,NewY)).
 loot(_).
-
-fight(X) :- X =< 30, random(1,5,Y),encounter(Y).
-fight(_) :- write('Boss fight time!').
-
-encounter(1) :- fightmeatball.
-encounter(2) :- fighttarrot.
-encounter(3) :- fightonion.
-encounter(4) :- fightsalad.
-
-fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
-fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
-fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
-fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
+ 
 
 score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,write('Total score is '),write(Total).
 score(ice).
 score(fire).
+
+event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,write('Your choice: '),read(D),crossroad(D).
+event(_) :- write('You continued your journey without any interesting events happening...').
 
 
 %For test purpose
