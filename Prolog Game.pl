@@ -113,8 +113,7 @@ fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp,
 
 %Battle
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle.
-battle :- \+hp(die),result.
-battle :- hp(die), result, gameover.
+battle :- result.
 
 action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
@@ -125,7 +124,7 @@ action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, w
 action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
 action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
 
-result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl.
+result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl,gameover.
 result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 %Utility
