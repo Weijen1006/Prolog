@@ -116,7 +116,7 @@ enemyattack('Tarrot',X) :- X > 45, write('Tarrot pull out its regen card ! Tarro
 enemyattack('Crying Onion',X) :- X> 20, write('Crying Onion makes you sad! Player hp - 1 from sadness'),nl,nl,deducthp.
 enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks! Player hp - 2'),nl,nl,deducthp,deducthp.
 enemyattack('Spaghetti Regretti',_) :- round(X) ,X \= 4, write('Spaghetti Regretti attack! Player hp - 1'),nl,nl,deducthp,retractall(round(_)), NewX is X + 1, assert(round(NewX)).
-enemyattack('Spaghetti Regretti',_) :- round(4), write('Spaghetti Regretti perform a double attack! Player hp - 2'),nl,nl,deducthp,deducthp,retractall(round(_)), assert(round(1)).
+enemyattack('Spaghetti Regretti',_) :- round(4), write('Spaghetti Regretti performs a double attack! Player hp - 2'),nl,nl,deducthp,deducthp,retractall(round(_)), assert(round(1)).
 enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),write(' attack'),nl,nl. 
 
 %Weapon
@@ -139,7 +139,7 @@ fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Oni
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
 neutralbossfight :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(neutral,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
 
-
+action(itemlist) :- itemList,nl,write('What will you do next? : '),read(X),action(X).
 action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
 action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
@@ -160,7 +160,7 @@ help :- write('List of helpful command'),nl,
 	write('blowtorch. - only can use on enemy'),nl,
 	write('pepper. - only can use on enemy'),!.
 
-itemlist :- weapon(X), write('Weapon : '),write(X),nl,
+itemList :- nl,weapon(X), write('Weapon : '),write(X),nl,
 	    (item(potion,Y),Y > 0, write('Tomato juice   x '),write(Y),nl;!),
 	    (item(blowtorch,Z),Z > 0, write('Blowtorch   x '),write(Z),nl;!),
 	    (item(pepper,A),A > 0, write('Pepper   x '),write(A),nl;!),
