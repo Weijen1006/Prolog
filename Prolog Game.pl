@@ -61,19 +61,21 @@ write('    ****** **   ** **   ** *******          ******     *    ******* **  *
 theend :- nl.
 
 %Neutral faction
-neutral :- fight(30).
+neutral :- event(30).
 
 fight(X) :- X =< 30, random(1,5,Y),encounter(Y).
-fight(_) :- random(1,31,X), event(X),nl, write('Boss fight time!'),neutralbossfight.
+fight(_) :- nl, write('Boss fight time!'),neutralbossfight.
 
 encounter(1) :- fightmeatball.
 encounter(2) :- fighttarrot.
 encounter(3) :- fightonion.
 encounter(4) :- fightsalad.
 
-crossroad(left) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
-crossroad(right) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
-crossroad(_) :- write('Please enter only left and right!'), read(X), crossroad(X).
+crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
+crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
+crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
+crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
+crossroad(_,Y) :- write('Please enter only left and right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).
 
 %Ice faction
 ice :- write('Stay tuned').
@@ -176,7 +178,7 @@ scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
 	       playerScore(Y), write('Player Score : '), write(Y),nl.
 
 
-event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,write('Your choice: '),read(D),crossroad(D).
+event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice: '),read(D),crossroad(D,R).
 event(_) :- write('You continued your journey without any interesting events happening...').
 
 
