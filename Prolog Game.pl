@@ -1,11 +1,12 @@
-start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),
+start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)),
 	 assert(hp(healthy)),assert(weapon('Wooden Spatula')),
-	 assert(item(potion,5)),
+	 assert(item(potion,10)),
 	 assert(item(blowtorch,3)),
 	 assert(item(pepper,3)),
 	 assert(item(mt,no)),
 	 assert(item(co,no)),
 	 assert(item(corkscrew,no)),
+	 assert(down(1)),
 	 assert(sneeze(no)),
 	 assert(playerScore(0)),
 	 assert(achievement(nothing)),
@@ -46,8 +47,13 @@ town :- write('          | N |          '),nl,
 location(up) :- write('You choose neutral faction, Good Luck'),nl,neutral.
 location(left) :- write('You choose ice faction, Good Luck'),nl,ice.
 location(right) :- write('You choose fire faction, Good Luck'),nl,fire.
-location(down) :- write('I see what you try to do there, but there is no going back'),nl,write('Your choice : '),read(X),location(X).
+location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,retractall(down(_)),assert(down(2)),write('Your choice : '),read(X),location(X).
+location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 location(_) :- write('Invalid Input, Please try again'),nl,write('Your choice : '),read(X),location(X).
+
+ending1(yes) :- fakeending.
+ending1(no) :- retractall(down(_)),assert(down(1)),write('Please choose a place to go (up/left/right)'),nl,write('Your choice : '),read(X),location(X).
+ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 
 gameover :- nl,
 write('    ******   ***   **   ** *******          ******  **   ** ******* ******  '),nl,
@@ -60,7 +66,9 @@ write('  *  ***  *  ***  *  * *  *  *****        *  ****  * *   * *  ******  *  
 write('   *      *  * *  *  * *  *       *        *      *   * *  *       *  **   *'),nl,
 write('    ****** **   ** **   ** *******          ******     *    ******* **  *** '),nl,!.
 
-theend :- nl.
+fakeending :- nl,achievedown,write('Clemen feels that he is not ready to do all this, so he just go back home and continue his miserable life'),nl,end.
+
+end :- achievement.
 
 %Neutral faction
 neutral :- event(30).
@@ -122,15 +130,18 @@ enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),w
 %Weapon
 weaponattack('Wooden Spatula') :- random(1,101,X), woodenspatula(X).
 weaponattack('Metal Spatula') :- random(1,101,X), metalspatula(X).
+weaponattack('Ice Cream Scoop') :- random(1,101,X), icecreamscoop(X).
 weaponattack('Frying Pan') :- fryingpan.
 woodenspatula(X) :- X =< 35,nl, write('Your attack missed!'),nl.
 woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 metalspatula(X) :- X =< 25,nl, write('Your attack missed!'),nl.
 metalspatula(X) :- X > 25,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+icecreamscoop(X) :- X > 25, enemy(ice,_,_),nl,write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+icecreamscoop(X) :- metalspatula(X).
 fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 
 %Battle
-battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? :'), read(Z), action(Z), battle.
+battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) :'), read(Z), action(Z), battle.
 battle :- result.
 
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
@@ -139,15 +150,15 @@ fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Oni
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
 neutralbossfight :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(neutral,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
 
-action(itemlist) :- itemList,nl,write('What will you do next? : '),read(X),action(X).
+action(itemlist) :- itemList,nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
 action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
 action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
-action(potion) :- use(potion), nl,write('What will you do next? : '),read(X),action(X).
-action(pepper) :- use(pepper), nl,write('What will you do next? : '),read(X),action(X).
-action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, write('What will you do next? :'),read(X),action(X).
+action(potion) :- use(potion), nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
+action(pepper) :- use(pepper), nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
+action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) :'),read(X),action(X).
 action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
-action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? : '),read(X) ,action(X).
+action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl,gameover.
 result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retractall(enemy(_,_,_)).
@@ -184,8 +195,15 @@ event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signb
 event(_) :- write('You continued your journey without any interesting events happening...').
 
 %achievement
-achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl;!.
+achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl,nl;!.
+achievedown :- \+achievement('Not ready for adventure...'), assert(achievement('Not ready for adventure...')),write('You unlocked an achievement : Not ready for adventure...'),nl,nl;!.
+
+achievement :- findall(X,achievement(X),List), nl,write('Achievements obtained :'),nl,printachieve(List).
+
+printachieve([]).
+printachieve([H|T]) :- write(H),nl,printachieve(T).
 
 %For test purpose
 give(fryingpan) :- retract(weapon(_)), assertz(weapon('Frying Pan')).
 give(metalspatula) :- retract(weapon(_)), assertz(weapon('Metal Spatula')).
+give(icecreamscoop) :- retract(weapon(_)), assertz(weapon('Ice Cream Scoop')).
