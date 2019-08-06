@@ -8,9 +8,11 @@ start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),
 	 assert(item(corkscrew,no)),
 	 assert(sneeze(no)),
 	 assert(playerScore(0)),
+	 assert(achievement(nothing)),
 	 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,town.
 
-story :- write('This story follows the adventure of Clemen Wohlfahrt, an amazing chef from the land of Redfields.'), get_single_char(_),nl,
+story :- achievestart,retract(achievement(nothing)),
+	 write('This story follows the adventure of Clemen Wohlfahrt, an amazing chef from the land of Redfields.'), get_single_char(_),nl,
 	 write('He was born with only one hand due to an accident at birth causing him a big disability in life and so on,but that did not stop him from achieving his dream at all.'), get_single_char(_),nl,
 	 write('And there he goes, on his way to open a new restaurant in a place called Calamity Town...'),get_single_char(_),nl,
 	 write('Breath in and breath out Clemen, you got this long journey ahead of you, said Clemen'),get_single_char(_),nl,
@@ -181,6 +183,8 @@ scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
 event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice: '),read(D),crossroad(D,R).
 event(_) :- write('You continued your journey without any interesting events happening...').
 
+%achievement
+achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl;!.
 
 %For test purpose
 give(fryingpan) :- retract(weapon(_)), assertz(weapon('Frying Pan')).
