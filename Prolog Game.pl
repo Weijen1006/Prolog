@@ -1,4 +1,5 @@
-start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)),
+    
+start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),
 	 assert(hp(healthy)),assert(weapon('Wooden Spatula')),
 	 assert(item(potion,10)),
 	 assert(item(blowtorch,3)),
@@ -8,6 +9,7 @@ start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),
 	 assert(item(corkscrew,no)),
 	 assert(down(1)),
 	 assert(sneeze(no)),
+	 assert(stun(no)),
 	 assert(playerScore(0)),
 	 assert(achievement(nothing)),
 	 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,town.
@@ -131,14 +133,16 @@ enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),w
 weaponattack('Wooden Spatula') :- random(1,101,X), woodenspatula(X).
 weaponattack('Metal Spatula') :- random(1,101,X), metalspatula(X).
 weaponattack('Ice Cream Scoop') :- random(1,101,X), icecreamscoop(X).
-weaponattack('Frying Pan') :- fryingpan.
+weaponattack('Frying Pan') :- enemy(Type,_,_), random(1,101,X),fryingpan(Type,X).
 woodenspatula(X) :- X =< 35,nl, write('Your attack missed!'),nl.
 woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 metalspatula(X) :- X =< 25,nl, write('Your attack missed!'),nl.
 metalspatula(X) :- X > 25,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 icecreamscoop(X) :- X > 25, enemy(ice,_,_),nl,write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 icecreamscoop(X) :- metalspatula(X).
-fryingpan :- write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+fryingpan(boss,X) :- X =< 30,nl,write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),retract(stun(_)),assert(stun(yes)),write('You have stunned the enemy'),nl.
+fryingpan(boss,X) :- X > 30,nl, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+fryingpan(X,_) :- X \= boss, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 
 %Battle
 battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) :'), read(Z), action(Z), battle.
@@ -148,12 +152,13 @@ fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatba
 fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
 fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
-neutralbossfight :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(neutral,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
+neutralbossfight :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
 
 action(itemlist) :- itemList,nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
-action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-action(attack) :- sneeze(yes), enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
+action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
+action(attack) :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
+action(attack) :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).
 action(potion) :- use(potion), nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
 action(pepper) :- use(pepper), nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
 action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) :'),read(X),action(X).
