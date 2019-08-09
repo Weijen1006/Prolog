@@ -1,6 +1,6 @@
     
 start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),
-	 assert(hp(healthy)),assert(weapon('Wooden Spatula')),
+	 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),
 	 assert(item(potion,10)),
 	 assert(item(blowtorch,3)),
 	 assert(item(pepper,3)),
@@ -12,7 +12,7 @@ start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),
 	 assert(stun(no)),
 	 assert(playerScore(0)),
 	 assert(achievement(nothing)),
-	 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,town.
+	 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,townhall.
 
 story :- achievestart,retract(achievement(nothing)),
 	 write('This story follows the adventure of Clemen Wohlfahrt, an amazing chef from the land of Redfields.'), get_single_char(_),nl,
@@ -29,9 +29,18 @@ write('***   ***  *  ***  *  *  ***** ***   ***   *    *    *'),nl,
 write('  *   *   *         * ****** *   *   *      *      *'),nl,
 write('  *   *   *   ***   * ****** *   *   *      *      *'),nl,
 write('  *   *   *  *   *  * *      *   *   *      *      *'),nl,
-write('  *****    **     **  ********   *****      ********').
+write('  *****    **     **  ********   *****      ********'),get_single_char(_).
 
-town :- write('          | N |          '),nl,
+%NPC
+interact(1) :- 	npc('Helpful David',no), write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
+		retract(npc('Helpful David',_)),assert(npc('Helpful David',yes)),nl,nl,location(interact).
+interact(1) :- 	npc('Helpful David',yes), random(1,11,X), advice(X),nl,nl,location(interact).
+interact(2) :- 	npc('Edythe The Kind',no),write('Hello young man.'),get_single_char(_),nl,write('I am just an old granny that is enjoying her old life.'),get_single_char(_),nl,
+	       	write('Clemen says "She looks kind and very trustworthy, maybe I can ask for some help from her."'),get_single_char(_),nl,retract(npc('Edythe The Kind',_)),assert(npc('Edythe The Kind',yes)),nl,location(interact).
+interact(2) :- 	npc('Edythe The Kind',yes),write('Clemen says "Dear Miss Edythe, can I ask for some help from you as I am having some trouble".'),get_single_char(_),write('Sure do dear, but what do you need?'),
+		nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,location(interact).
+
+townhall :- write('          | N |          '),nl,
 	write('          |   |          '),nl,
 	write('          |   |          '),nl,
 	write('          |   |          '),nl,
@@ -46,6 +55,7 @@ town :- write('          | N |          '),nl,
 	write('Please choose a place to go (up/left/right)'),nl,
 	write('Your choice : '),read(X),location(X).
 
+location(interact) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
 location(up) :- write('You choose neutral faction, Good Luck'),nl,neutral.
 location(left) :- write('You choose ice faction, Good Luck'),nl,ice.
 location(right) :- write('You choose fire faction, Good Luck'),nl,fire.
@@ -68,7 +78,7 @@ write('  *  ***  *  ***  *  * *  *  *****        *  ****  * *   * *  ******  *  
 write('   *      *  * *  *  * *  *       *        *      *   * *  *       *  **   *'),nl,
 write('    ****** **   ** **   ** *******          ******     *    ******* **  *** '),nl,!.
 
-fakeending :- nl,achievedown,write('Clemen feels that he is not ready to do all this, so he just go back home and continue his miserable life'),nl,end.
+fakeending :- nl,achievedown,write('Clemen feels that he is not ready to do all this, so he decides to go back home and continue his miserable life'),nl,end.
 
 end :- achievement.
 
@@ -118,6 +128,11 @@ use(blowtorch) :- item(blowtorch,0),nl, write('You have no blowtorch left'),nl.
 use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
 		  enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
 		  write('You used blowtorch on the enemy, 2 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
+
+additem(1) :- item(potion,X), NewX is X + 3, retractall(item(potion,_)), assert(item(potion,NewX)), write('You have received 3 tomato juices!').
+additem(2) :- item(pepper,X), NewX is X + 1, retractall(item(pepper,_)), assert(item(pepper,NewX)), write('You have received 1 pepper!').
+additem(3) :- item(blowtorch,X), NewX is X + 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)), write('You have received 1 blowtorch!').
+additem(_) :- write('Granny cant seem to hear you... (Please enter only shown numbers)'),read(X),additem(X).
 
 %Monster
 enemyattack('Meatball',X) :- X > 40, write('Meatball attack!   Player hp - 1'), nl,nl, deducthp.
@@ -186,12 +201,22 @@ itemList :- nl,weapon(X), write('Weapon : '),write(X),nl,
 	    
 loot(X) :- X >= 5, X < 80, write('You have obtained potion!'), item(potion,Y), NewY is Y +1, retractall(item(potion,_)), assert(item(potion,NewY)).
 loot(_).
- 
+  
+advice(1) :- write('Did you know? Tomato juice heals your hp full!').
+advice(2) :- write('Edythe will sometimes provide you supplies! You should pay a visit to the old lady often.'),get_single_char(_).
+advice(3) :- write('There are three areas you can explore to gather ingredients which is Violent Garden, Fiery Hill and Icy River!'),nl,write('The other areas are restricted due to its dangerous surroundings for now..'),get_single_char(_).
+advice(4) :- write('Did you know if your HP drops to "die", you actually die?'),nl, achieveuseless,get_single_char(_).
+advice(5) :- write('You have 5 states of HP, make sure to keep track of your HP or else you might lose!'),get_single_char(_),write('..... Oh wait, I mean die not lose. This is not a game after all'),get_single_char(_).
+advice(6) :- write('You gain score everytime you defeat an enemy and extra for bosses, but everytime you heal you lose points! (There is an achievement for this teehee)'),get_single_char(_).
+advice(7) :- write('Use pepper to avoid getting hit for one round!'),get_single_char(_).
+advice(8) :- write('You have limited resources! Make sure to make full use for them!'),get_single_char(_).
+advice(9) :- write('I like me some steak!'),get_single_char(_).
+advice(10) :- write('I am running out of scripts to help you, please stop asking me for help.'),nl,achievelazywriting,get_single_char(_).
 
 score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,scorestatus.
-score(ice).
-score(fire).
-
+score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,scorestatus.
+score(fire) :- playerScore(S), X is 200, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 200 score!!'),nl,nl,scorestatus.
+score(boss) :- playerScore(S), X is 500, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 500 score!!'),nl,nl,scorestatus.
 scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
 	       playerScore(Y), write('Player Score : '), write(Y),nl.
 
@@ -202,6 +227,8 @@ event(_) :- write('You continued your journey without any interesting events hap
 %achievement
 achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl,nl;!.
 achievedown :- \+achievement('Not ready for adventure...'), assert(achievement('Not ready for adventure...')),write('You unlocked an achievement : Not ready for adventure...'),nl,nl;!.
+achieveuseless :- \+achievement('Not so useful now!!'), assert(achievement('Not so useful now!!')), write('You unlocked an achievement : Not so useful now!!'),nl,nl;!.
+achievelazywriting :- \+achievement('Lazy writing'), assert(achievement('Lazy writing')), write('You unlocked an achievement : Lazy writing'),nl,nl;!.
 
 achievement :- findall(X,achievement(X),List), nl,write('Achievements obtained :'),nl,printachieve(List).
 
