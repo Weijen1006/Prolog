@@ -1,5 +1,5 @@
 	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),
-		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),
+		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
 		 assert(item(potion,10)),
 		 assert(item(blowtorch,3)),
 		 assert(item(pepper,3)),
@@ -42,7 +42,17 @@
 	interact(2) :- 	npc('Edythe The Kind',yes),write('Clemen says "Dear Miss Edythe, can I ask for some help from you as I am having some trouble".'),get_single_char(_),write('Sure do dear, but what do you need?'),
 			nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,retract(npc('Edythe The Kind',_)), assert(npc('Edythe The Kind',help)),location(int).
 	interact(2) :- npc('Edythe The Kind',help),write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
-
+	interact(3) :- npc('Trader Terry', no),write('Welcome to my shop!! Are you here to buy my wares?'),nl,write('What do you mean you have no money?? I can see it right there!'),nl,
+		       write('Player Score: '), playerScore(S), write(S),nl,write('Yes!! That right there I need that!'), retract(npc('Trader Terry',_)), assert(npc('Trader Terry',yes)),nl,nl,location(int).
+	interact(3) :- npc('Trader Terry', yes), write('1. Tomato juice - 100 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,playerScore(S), write('Currency: '),write(S),nl,
+		       write('Your Choice: '),read(X), buy(X).
+	
+	buy(1) :- playerScore(S), S >= 100, NewS is S - 100, retract(playerScore(_)), assert(playerScore(NewS)), item(potion,X), NewX is X + 1, retract(item(potion,_)),assert(item(potion,NewX)), write('You received one potion! Now you have '),write(NewX),write(' potions!'),interact(3),nl.
+	buy(2) :- playerScore(S), S >= 150, NewS is S - 150, retract(playerScore(_)), assert(playerScore(NewS)),item(pepper,X), NewX is X + 1, retract(item(pepper,_)),assert(item(pepper,NewX)), write('You received one pepper! Now you have '),write(NewX),write(' peppers!'),interact(3),nl.
+	buy(3) :- playerScore(S), S >= 300, NewS is S - 300, retract(playerScore(_)), assert(playerScore(NewS)),item(blowtorch,X), NewX is X + 1, retract(item(blowtorch,_)),assert(item(blowtorch,NewX)), write('You received one blowtorch! Now you have '),write(NewX),write(' blowtorch!'),interact(3),nl.
+	buy(5) :- write('Pleasure doing business with you!!'),nl, location(int).
+	buy(_) :- write('Not enought currency for this!!'),nl,interact(3). 
+	
 	townhall :- nl,
 		    write('          | N |          '),nl,
 		    write('          |   |          '),nl,
@@ -64,7 +74,7 @@
 			  write('right - Go to Fiery Hill'),nl,
 			  write('Your choice : ').
 
-	location(int) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
+	location(int) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('3. Trader Terry'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
 	location(up) :- complete(neutral), write('You have completed Violet Garden, choose another place!'),nl,nl,chooselocation,read(X),location(X).
 	location(up) :- write('You choose Violet Garden, Good Luck'),nl,neutral.
 	location(left) :- complete(ice), write('You have completed Icy Riverside, choose another place!'),nl,nl,chooselocation,read(X),location(X).
