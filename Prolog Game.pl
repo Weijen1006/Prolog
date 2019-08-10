@@ -1,4 +1,4 @@
-	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),
+	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),
 		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),
 		 assert(item(potion,10)),
 		 assert(item(blowtorch,3)),
@@ -13,6 +13,7 @@
 		 assert(achievement(nothing)),
 		 assert(playerstun(no)),
 		 assert(playerloc(town)),
+		 assert(complete(nothing)),
 		 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,townhall.
 
 	story :- achievestart,retract(achievement(nothing)),
@@ -58,15 +59,18 @@
 		    chooselocation,read(X),nl,location(X).
 
 	chooselocation :- write('int   - Interact with NPC'),nl,
-			  write('up    - Go to Bizzare Garden'),nl,
+			  write('up    - Go to Violet Garden'),nl,
 			  write('left  - Go to Icy Riverside'),nl,
 			  write('right - Go to Fiery Hill'),nl,
 			  write('Your choice : ').
 
 	location(int) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
-	location(up) :- write('You choose neutral faction, Good Luck'),nl,neutral.
-	location(left) :- write('You choose ice faction, Good Luck'),nl,ice.
-	location(right) :- write('You choose fire faction, Good Luck'),nl,fire.
+	location(up) :- complete(neutral), write('You have completed Violet Garden, choose another place!'),nl,nl,chooselocation,read(X),location(X).
+	location(up) :- write('You choose Violet Garden, Good Luck'),nl,neutral.
+	location(left) :- complete(ice), write('You have completed Icy Riverside, choose another place!'),nl,nl,chooselocation,read(X),location(X).
+	location(left) :- write('You choose Icy Riverside, Good Luck'),nl,ice.
+	location(right) :- complete(neutral),complete(ice),write('You choose fire faction, Good Luck'),nl,fire.
+	location(right) :- write('You need to complete both Violet Garden and Icy Riverside to enter Fiery Hill'),nl,nl,chooselocation,read(X),location(X).
 	location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,retractall(down(_)),assert(down(2)),chooselocation,read(X),location(X).
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
