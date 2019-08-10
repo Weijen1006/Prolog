@@ -177,6 +177,9 @@
 	enemyattack('Triple Scope', X) :- X >= 71, X =< 91, write('Triple Scope headshots you!     Player hp - 2'),nl,nl,deducthp,deducthp.
 	enemyattack('Banana Skit', X) :- X >= 60, X =< 80, write('Banana Skit throws his cream at you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Banana Skit', X) :- X >= 39, X =< 59, write('Banana Skit tells you a joke and you laughed!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
+	enemyattack('Frozen Tuna', X) :- round(Y), Y = 3, X >= 0, X =< 79, write('Frozen Tuna slaps you!     Player hp - 2'),nl,nl, deducthp, deducthp, retract(round(_)), assert(round(1)). 
+	enemyattack('Frozen Tuna', X) :- round(Y), Y = 3, X >= 80, X =< 100, write('Frozen Tuna spits frozen water at you!     Player hp - 2'),nl,nl,deducthp,deducthp,retract(playerstun(_)),assert(playerstun(yes)), retract(round(_)), assert(round(1)).
+	enemyattack('Frozen Tuna', _) :- round(Y), NewY is Y + 1, retract(round(_)), assert(round(NewY)), write('Frozen Tuna is getting ready to attack!'),nl.
 		
 	enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),write(' attack'),nl,nl. 
 
@@ -207,11 +210,15 @@
 	fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
 	fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
 	fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
-	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
 	fighticecube :- write('A Ice Cube appears !'), assert(enemy(ice,'Ice Cube', 3)),nl,nl,battlestatus,nl,battle.
 	fightvanilla :- write('A Vanilla Shake appears !'),nl,write('It seems ready to have a dance off against you!'), assert(enemy(ice,'Vanilla Shake', 5)),nl,nl,battle.
 	fightscope :- write('A Triple Scope is taking aim on you!'),assert(enemy(ice,'Triple Scope', 3)),nl,nl,battle.
 	fightbanana :- write('A Banana Skit appears !'),nl,write('Clemen thought to himself "That is a funny looking banana split."'),assert(enemy(ice,'Banana Skit', 5)),nl,nl,battle.
+	
+	%Boss
+	
+	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
+	bossfight(ice) :- write('Frozen Tuna appears!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
 
 	chooseaction :- write('i - view your items'),nl,
 			write('a - use your weapon to attack enemy'),nl,
