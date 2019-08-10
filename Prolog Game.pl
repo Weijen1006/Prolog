@@ -228,7 +228,8 @@
 			write('Your Choice : ').
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
-	action(a) :- playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,(burn(yes),nl,write('You took burn damage, player Hp - 1'),reducthp;burn(no)),battlestatus,nl,\+hp(die),sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- hp(die),!.
 	action(a) :- enemy(_,_,Hp), Hp =< 0,!.
 	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
 	action(a) :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
@@ -245,6 +246,27 @@
 	result :- hp(die),write('You die'),nl,gameover,end.
 	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,townhall.
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
+
+	%Chest	
+	chest(can) :- nl,write('As you walk around the Violet Garden, you found a very peculiar looking Can with a keyhole on it'),nl,
+		      write('Do you want to open it?'),nl,
+		      write('Your choice (yes/no) : '),read(X),open(can,X).
+	chest(crabshell) :- nl,write('As you walk around the Icy Riverside, you found a Crab Shell, seems like there is something inside?'),nl,
+			    write('Do you want to open it?'),nl,
+		      	    write('Your choice (yes/no) : '),read(X),open(crabshell,X).	
+
+	open(can,yes) :- get_single_char(_),item(co,yes),nl,write('You use the Can Opener to open the top of the Can instead of of putting it into the keyhole...'),get_single_char(_),nl,
+			 write('the Can Opener breaks, but the Can is opened!'),nl,item(pepper,X),
+			 write('You obtained 3 pepper!'),retractall(item(co,_)),assert(item(co,no)),retractall(item(pepper,_)),NewX is X + 3, assert(item(pepper,NewX)),nl.
+	open(can,yes) :- nl,item(co,no),write('You tried to open the Can, but its too hard and you cant break it open...'),nl.
+	open(can,no) :- nl,write('You just ignore the peculiar Can and continue along the path...'),nl.
+	open(crabshell,yes) :- get_single_char(_),item(mt,yes),nl,write('You use the Meat Tenderizer to hit the Crab Shell...'),get_single_char(_),nl,
+			       write('but turns out Meat Tenderizer is not a proper tool to open Crab Shell, so it breaks...'),get_single_char(_),nl,
+			       write('Suddenly, the Crab Shell opened'),nl,item(blowtorch,X),
+			       write('You obtained 2 blowtorch!'),retractall(item(mt,_)),assert(item(mt,no)),retractall(item(blowtorch,_)),NewX is X + 2, assert(item(blowtorch,NewX)),nl. 
+	open(crabshell,yes) :- item(mt,no),nl,write('You tried to open the Crab Shell, but its too hard and you cant break it open...'),nl.
+	open(crabshell,no) :- nl,write('You just ignore the Crab Shell and continue along the path...'),nl.
+	open(X,_) :- write('Invalid Input, Please try again'),nl,write('Your choice (yes/no) : '),read(Y),nl,open(X,Y).	
 
 	%Utility
 	itemList :- nl,weapon(X), write('Weapon : '),write(X),nl,
