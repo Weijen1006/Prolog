@@ -42,7 +42,8 @@
 			nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,retract(npc('Edythe The Kind',_)), assert(npc('Edythe The Kind',help)),location(int).
 	interact(2) :- npc('Edythe The Kind',help),write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
 
-	townhall :- write('          | N |          '),nl,
+	townhall :- nl,
+		    write('          | N |          '),nl,
 		    write('          |   |          '),nl,
 		    write('          |   |          '),nl,
 		    write('          |   |          '),nl,
@@ -54,7 +55,7 @@
 		    write('          |   |          '),nl,
 		    write('          |   |          '),nl,
 		    write('          |   |          '),nl,nl,
-		    chooselocation,read(X),location(X).
+		    chooselocation,read(X),nl,location(X).
 
 	chooselocation :- write('int   - Interact with NPC'),nl,
 			  write('up    - Go to Bizzare Garden'),nl,
@@ -68,7 +69,7 @@
 	location(right) :- write('You choose fire faction, Good Luck'),nl,fire.
 	location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,retractall(down(_)),assert(down(2)),chooselocation,read(X),location(X).
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
-	location(_) :- write('Invalid Input, Please try again'),nl,chooselocation,read(X),location(X).
+	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
 
 	ending1(yes) :- fakeending.
 	ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
@@ -220,12 +221,6 @@
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 	%Utility
-	help :- write('List of helpful command'),nl,
-		write('itemlist. - to check available item in your inventory'),nl,
-		write('potion. - to use tomato juice'),nl,
-		write('blowtorch. - only can use on enemy'),nl,
-		write('pepper. - only can use on enemy'),!.
-
 	itemList :- nl,weapon(X), write('Weapon : '),write(X),nl,
 		    (item(potion,Y),Y > 0, write('Tomato juice   x '),write(Y),nl;!),
 		    (item(blowtorch,Z),Z > 0, write('Blowtorch   x '),write(Z),nl;!),
@@ -238,15 +233,15 @@
 	loot(_).
 
 	advice(1) :- write('Did you know? Tomato juice heals your hp full!').
-	advice(2) :- write('Edythe will sometimes provide you supplies! You should pay a visit to the old lady often.'),get_single_char(_).
-	advice(3) :- write('There are three areas you can explore to gather ingredients which is Violent Garden, Fiery Hill and Icy River!'),nl,write('The other areas are restricted due to its dangerous surroundings for now..'),get_single_char(_).
-	advice(4) :- write('Did you know if your HP drops to "die", you actually die?'),nl, achieveuseless,get_single_char(_).
-	advice(5) :- write('You have 5 states of HP, make sure to keep track of your HP or else you might lose!'),get_single_char(_),write('..... Oh wait, I mean die not lose. This is not a game after all'),get_single_char(_).
-	advice(6) :- write('You gain score everytime you defeat an enemy and extra for bosses, but everytime you heal you lose points! (There is an achievement for this teehee)'),get_single_char(_).
-	advice(7) :- write('Use pepper to avoid getting hit for one round!'),get_single_char(_).
-	advice(8) :- write('You have limited resources! Make sure to make full use for them!'),get_single_char(_).
-	advice(9) :- write('I like me some steak!'),get_single_char(_).
-	advice(10) :- write('I am running out of scripts to help you, please stop asking me for help.'),nl,achievelazywriting,get_single_char(_).
+	advice(2) :- write('Edythe will sometimes provide you supplies! You should pay a visit to the old lady often.').
+	advice(3) :- write('There are three areas you can explore to gather ingredients which is Violent Garden, Fiery Hill and Icy River!'),nl,write('The other areas are restricted due to its dangerous surroundings for now..').
+	advice(4) :- write('Did you know if your HP drops to "die", you actually die?'),achieveuseless.
+	advice(5) :- get_single_char(_),write('You have 5 states of HP, make sure to keep track of your HP or else you might lose!'),get_single_char(_),write('..... Oh wait, I mean die not lose. This is not a game after all').
+	advice(6) :- write('You gain score everytime you defeat an enemy and extra for bosses, but everytime you heal you lose points! (There is an achievement for this teehee)').
+	advice(7) :- write('Use pepper to avoid getting hit for one round!').
+	advice(8) :- write('You have limited resources! Make sure to make full use for them!').
+	advice(9) :- write('I like me some steak!').
+	advice(10) :- write('I am running out of scripts to help you, please stop asking me for help.'),achievelazywriting.
 
 	score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,scorestatus.
 	score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,scorestatus.
@@ -262,8 +257,8 @@
 	%achievement
 	achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl,nl;!.
 	achievedown :- \+achievement('Not ready for adventure...'), assert(achievement('Not ready for adventure...')),write('You unlocked an achievement : Not ready for adventure...'),nl,nl;!.
-	achieveuseless :- \+achievement('Not so useful now!!'), assert(achievement('Not so useful now!!')), write('You unlocked an achievement : Not so useful now!!'),nl,nl;!.
-	achievelazywriting :- \+achievement('Lazy writing'), assert(achievement('Lazy writing')), write('You unlocked an achievement : Lazy writing'),nl,nl;!.
+	achieveuseless :- \+achievement('Not so useful now!!'), assert(achievement('Not so useful now!!')),nl, write('You unlocked an achievement : Not so useful now!!');!.
+	achievelazywriting :- \+achievement('Lazy writing'), assert(achievement('Lazy writing')),nl, write('You unlocked an achievement : Lazy writing');!.
 
 	achievement :- findall(X,achievement(X),List), nl,write('Achievements obtained :'),nl,printachieve(List).
 
