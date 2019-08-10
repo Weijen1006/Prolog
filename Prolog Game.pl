@@ -34,13 +34,13 @@
 
 	%NPC
 	interact(1) :- 	npc('Helpful David',no), write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
-			retract(npc('Helpful David',_)),assert(npc('Helpful David',yes)),nl,nl,location(interact).
-	interact(1) :- 	npc('Helpful David',yes), random(1,11,X), advice(X),nl,nl,location(interact).
+			retract(npc('Helpful David',_)),assert(npc('Helpful David',yes)),nl,nl,location(int).
+	interact(1) :- 	npc('Helpful David',yes), random(1,11,X), advice(X),nl,nl,location(int).
 	interact(2) :- 	npc('Edythe The Kind',no),write('Hello young man.'),get_single_char(_),nl,write('I am just an old granny that is enjoying her old life.'),get_single_char(_),nl,
-			write('Clemen says "She looks kind and very trustworthy, maybe I can ask for some help from her."'),get_single_char(_),nl,retract(npc('Edythe The Kind',_)),assert(npc('Edythe The Kind',yes)),nl,location(interact).
+			write('Clemen says "She looks kind and very trustworthy, maybe I can ask for some help from her."'),get_single_char(_),nl,retract(npc('Edythe The Kind',_)),assert(npc('Edythe The Kind',yes)),nl,location(int).
 	interact(2) :- 	npc('Edythe The Kind',yes),write('Clemen says "Dear Miss Edythe, can I ask for some help from you as I am having some trouble".'),get_single_char(_),write('Sure do dear, but what do you need?'),
-			nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,retract(npc('Edythe The Kind',_)), assert(npc('Edythe The Kind',help)),location(interact).
-	interact(2) :- npc('Edythe The Kind',help),write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(interact).
+			nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,retract(npc('Edythe The Kind',_)), assert(npc('Edythe The Kind',help)),location(int).
+	interact(2) :- npc('Edythe The Kind',help),write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
 
 	townhall :- write('          | N |          '),nl,
 		    write('          |   |          '),nl,
