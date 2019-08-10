@@ -106,7 +106,7 @@
 	end :- achievement.
 
 	%Neutral faction
-	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(30),fight(50).
+	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(30),chest(can),fight(50).
 
 	fight(X) :- playerloc(Place), X =< 50, random(1,5,Y),encounter(Y,Place).
 	fight(_) :- playerloc(Place),nl, write('Boss fight time!'),bossfight(Place).
@@ -243,7 +243,7 @@
 	action(b) :- enemy(_,_,Hp), Hp =< 0,!.
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
-	result :- hp(die),write('You die'),nl,gameover,end.
+	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
 	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,townhall.
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
