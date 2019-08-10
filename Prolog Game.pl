@@ -231,7 +231,7 @@
 	action(_) :- write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl,gameover.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)).
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,scrore(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)).
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 	%Utility
