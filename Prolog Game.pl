@@ -31,7 +31,7 @@
 	write('    #    #    #  ####    #     #      #     # #    # #    # #####  # #  #   #   #    # #    # #####     #    # #####     #       #      #####  # ## # #####  # #  # '),nl,
 	write('    #    ######      #   #     #      ####### #    # #    # #      #  # #   #   #    # #####  #         #    # #         #       #      #      #    # #      #  # # '),nl,
 	write('    #    #    # #    #   #     #      #     # #    #  #  #  #      #   ##   #   #    # #   #  #         #    # #         #     # #      #      #    # #      #   ## '),nl,
-	write('    #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # '),get_single_char(_)
+	write('    #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # '),get_single_char(_).
 
 	%NPC
 	interact(1) :- 	npc('Helpful David',no), write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
