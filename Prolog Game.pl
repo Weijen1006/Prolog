@@ -1,4 +1,3 @@
-    
 start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),
 	 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),
 	 assert(item(potion,10)),
@@ -41,30 +40,35 @@ interact(2) :- 	npc('Edythe The Kind',yes),write('Clemen says "Dear Miss Edythe,
 		nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,location(interact).
 
 townhall :- write('          | N |          '),nl,
-	write('          |   |          '),nl,
-	write('          |   |          '),nl,
-	write('          |   |          '),nl,
-	write('          |   |          '),nl,
-	write('----------     ----------'),nl,
-	write('I          Town         F'),nl,
-	write('----------     ----------'),nl,
-	write('          |   |          '),nl,
-	write('          |   |          '),nl,
-	write('          |   |          '),nl,
-	write('          |   |          '),nl,nl,
-	write('Please choose a place to go (up/left/right)'),nl,
-	write('Your choice : '),read(X),location(X).
+	    write('          |   |          '),nl,
+	    write('          |   |          '),nl,
+	    write('          |   |          '),nl,
+	    write('          |   |          '),nl,
+	    write('----------     ----------'),nl,
+	    write('I          Town         F'),nl,
+	    write('----------     ----------'),nl,
+	    write('          |   |          '),nl,
+	    write('          |   |          '),nl,
+	    write('          |   |          '),nl,
+	    write('          |   |          '),nl,nl,
+	    chooselocation,read(X),location(X).
 
-location(interact) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
+chooselocation :- write('int   - Interact with NPC'),nl,
+		  write('up    - Go to Bizzare Garden'),nl,
+		  write('left  - Go to Icy Riverside'),nl,
+		  write('right - Go to Fiery Hill'),nl,
+		  write('Your choice : ').
+
+location(int) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
 location(up) :- write('You choose neutral faction, Good Luck'),nl,neutral.
 location(left) :- write('You choose ice faction, Good Luck'),nl,ice.
 location(right) :- write('You choose fire faction, Good Luck'),nl,fire.
-location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,retractall(down(_)),assert(down(2)),write('Your choice : '),read(X),location(X).
+location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,retractall(down(_)),assert(down(2)),chooselocation,read(X),location(X).
 location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
-location(_) :- write('Invalid Input, Please try again'),nl,write('Your choice : '),read(X),location(X).
+location(_) :- write('Invalid Input, Please try again'),nl,chooselocation,read(X),location(X).
 
 ending1(yes) :- fakeending.
-ending1(no) :- retractall(down(_)),assert(down(1)),write('Please choose a place to go (up/left/right)'),nl,write('Your choice : '),read(X),location(X).
+ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
 ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 
 gameover :- nl,
@@ -97,7 +101,7 @@ crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines
 crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
 crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
 crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
-crossroad(_,Y) :- write('Please enter only left and right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).
+crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).
 
 %Ice faction
 ice :- write('Stay tuned').
@@ -160,7 +164,7 @@ fryingpan(boss,X) :- X > 30,nl, write('Its a direct hit!'),nl, enemy(Type,Name,H
 fryingpan(X,_) :- X \= boss, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 
 %Battle
-battle :- \+hp(die), enemy(_,_,Y), Y > 0, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) :'), read(Z), action(Z), battle.
+battle :- \+hp(die), enemy(_,_,Y), Y > 0, chooseaction, read(Z), action(Z), battle.
 battle :- result.
 
 fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
@@ -169,16 +173,23 @@ fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Oni
 fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
 neutralbossfight :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',15)),nl,nl,battlestatus,nl,battle.
 
-action(itemlist) :- itemList,nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
-action(attack) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-action(attack) :- enemy(_,_,Hp), Hp =< 0,!.
-action(attack) :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
-action(attack) :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).
-action(potion) :- use(potion), nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
-action(pepper) :- use(pepper), nl,write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X),action(X).
-action(blowtorch) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) :'),read(X),action(X).
-action(blowtorch) :- enemy(_,_,Hp), Hp =< 0,!.
-action(_) :- write('Invalid action, please try again'), nl, write('What will you do next? (itemlist/attack/potion/blowtorch/pepper) : '),read(X) ,action(X).
+chooseaction :- write('i - view your items'),nl,
+		write('a - use your weapon to attack enemy'),nl,
+		write('t - use tomato juice'),nl,
+		write('b - use blowtorch'),nl,
+		write('p - use pepper'),nl,
+		write('Your Choice : ').
+
+action(i) :- itemList,nl,chooseaction,read(X),action(X).
+action(a) :- get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl, sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+action(a) :- enemy(_,_,Hp), Hp =< 0,!.
+action(a) :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
+action(a) :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).
+action(t) :- use(potion), nl,chooseaction,read(X),action(X).
+action(p) :- use(pepper), nl,chooseaction,read(X),action(X).
+action(b) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, chooseaction,read(X),action(X).
+action(b) :- enemy(_,_,Hp), Hp =< 0,!.
+action(_) :- write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 result :- hp(die), write('You die'),retractall(enemy(_,_,_)),nl,gameover.
 result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retractall(enemy(_,_,_)).
