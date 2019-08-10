@@ -25,13 +25,13 @@
 		 write('This... tasty adventure of his...'),get_single_char(_),nl.
 
 	poster :- 
-	write('*********    *****    ******** ********* *****     *****'),nl,
-	write('*       *   *     *   *      * *       *  *   *   *   *'),nl,
-	write('***   ***  *  ***  *  *  ***** ***   ***   *    *    *'),nl,
-	write('  *   *   *         * ****** *   *   *      *      *'),nl,
-	write('  *   *   *   ***   * ****** *   *   *      *      *'),nl,
-	write('  *   *   *  *   *  * *      *   *   *      *      *'),nl,
-	write('  *****    **     **  ********   *****      ********'),get_single_char(_).
+	write(' #######                  #######                                 #                                                                                #####                                     ### '),nl,
+	write('    #    #    # ######       #      ##    ####  ##### #   #      # #   #####  #    # ###### #    # ##### #    # #####  ######     ####  ######    #     # #      ###### #    # ###### #    # ### '),nl,
+	write('    #    #    # #            #     #  #  #        #    # #      #   #  #    # #    # #      ##   #   #   #    # #    # #         #    # #         #       #      #      ##  ## #      ##   # ### '),nl,
+	write('    #    ###### #####        #    #    #  ####    #     #      #     # #    # #    # #####  # #  #   #   #    # #    # #####     #    # #####     #       #      #####  # ## # #####  # #  #  #  '),nl,
+	write('    #    #    # #            #    ######      #   #     #      ####### #    # #    # #      #  # #   #   #    # #####  #         #    # #         #       #      #      #    # #      #  # #     '),nl,
+	write('    #    #    # #            #    #    # #    #   #     #      #     # #    #  #  #  #      #   ##   #   #    # #   #  #         #    # #         #     # #      #      #    # #      #   ## ### '),nl,
+	write('    #    #    # ######       #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # ### '),get_single_char(_).
 
 	%NPC
 	interact(1) :- 	npc('Helpful David',no), write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
@@ -168,14 +168,14 @@
 	enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks!     Player hp - 2'),nl,nl,deducthp,deducthp.
 	enemyattack('Spaghetti Regretti',_) :- round(X) ,X \= 4, write('Spaghetti Regretti attack!     Player hp - 1'),nl,nl,deducthp,retractall(round(_)), NewX is X + 1, assert(round(NewX)).
 	enemyattack('Spaghetti Regretti',_) :- round(4), write('Spaghetti Regretti performs a double attack!     Player hp - 2'),nl,nl,deducthp,deducthp,retractall(round(_)), assert(round(1)).
-	enemyattack('Ice Cube',X) :- X >= 19 ,X < 60, write('Ice Cube slides towards you!     Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Ice Cube',X) :- X >= 39 ,X =< 59, write('Ice Cube slides towards you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Ice Cube',X) :- X >= 60 ,X =< 80, write('Ice Cube freezes you this turn!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
-	enemyattack('Vanilla Shake', X) :- X =< 45 , write('Vanilla Shake dances all over you!     Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Vanilla Shake', X) :- X =< 45 , X >= 25, write('Vanilla Shake dances all over you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Vanilla Shake', X) :- X >= 46, X =< 66, write('Vanilla Shake freezes you!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
-	enemyattack('Triple Scope', X) :- X >= 20, X =< 70, write('Triple Scope snipes you!     Player hp - 1'),nl,nl,deducthp.
-	enemyattack('Triple Scope', X) :- X >= 71, X < 89, write('Triple Scope headshots you!     Player hp - 1'),nl,nl,deducthp.
-	enemyattack('Banana Skit', X) :- X >= 60, write('Banana Skit throws his cream at you!     Player hp - 1'),nl,nl,deducthp.
-	enemyattack('Banana Skit', X) :- X > 44, X =< 59, write('Banana Skit tells you a joke and you laughed!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
+	enemyattack('Triple Scope', X) :- X >= 50, X =< 70, write('Triple Scope snipes you!     Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Triple Scope', X) :- X >= 71, X =< 91, write('Triple Scope headshots you!     Player hp - 2'),nl,nl,deducthp,deducthp.
+	enemyattack('Banana Skit', X) :- X >= 60, X =< 80, write('Banana Skit throws his cream at you!     Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Banana Skit', X) :- X >= 39, X =< 59, write('Banana Skit tells you a joke and you laughed!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
 		
 	enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),write(' attack'),nl,nl. 
 
