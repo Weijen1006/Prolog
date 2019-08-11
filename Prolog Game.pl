@@ -138,8 +138,8 @@
 	
 	fortune(X,Y) :- playerloc(ice), X == Y, nl,write('You just got the fortune cookie correcty, its a Ice Cream Scoop in there!!!'),nl, 
 			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Ice Cream Scoop').
-	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune cookie correcty, its a pair of Chopsticks in there!!!'),nl, 
-			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopsticks').
+	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune cookie correcty, its a Chopstick in there!!!'),nl, 
+			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopstick').
 	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp.
 	
 	%Neutral faction
@@ -412,3 +412,4 @@
 	give('Frying Pan') :- retract(weapon(_)), assert(weapon('Frying Pan')).
 	give('Metal Spatula') :- retract(weapon(_)), assert(weapon('Metal Spatula')).
 	give('Ice Cream Scoop') :- retract(weapon(_)), assert(weapon('Ice Cream Scoop')).
+	give('Chopstick') :- retract(weapon(_)), assert(weapon('Chopstick')).
