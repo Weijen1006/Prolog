@@ -106,7 +106,7 @@
 	end :- achievement.
 
 	%Neutral faction
-	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(30),chest(can),fight(50).
+	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(50),chest(can),fight(50).
 
 	fight(X) :- playerloc(Place), X =< 50, random(1,5,Y),encounter(Y,Place).
 	fight(_) :- playerloc(Place),nl, write('Boss fight time!'),bossfight(Place).
@@ -337,7 +337,11 @@
 
 
 	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R).
+	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juices are being snatched'),nl,random(1,4,R),snatch(R).
 	event(_) :- write('You continued your journey without any interesting events happening...').
+
+	snatch(X) :- item(potion,Y), Y >= X, write('Tomato Juice - '), write(X), NewY is Y - X, retractall(item(potion,_)), assert(item(potion,NewY)), write('     '),write(NewY),write(' Tomato Juice left'),nl.
+	snatch(X) :- item(potion,Y), Y < X, random(1,X,R), snatch(R).
 
 	%achievement
 	achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl,nl;!.
