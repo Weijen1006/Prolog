@@ -1,4 +1,4 @@
-	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),
+	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),retractall(burn(_)),retractall(stage(_)),
 		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
 		 assert(item(potion,10)),
 		 assert(item(blowtorch,3)),
@@ -14,6 +14,8 @@
 		 assert(playerstun(no)),
 		 assert(playerloc(town)),
 		 assert(complete(nothing)),
+		 assert(burn(no)),
+		 assert(stage(1)),
 		 write('Starting of the story:'),get_single_char(_),nl,story,poster,nl,townhall.
 
 	story :- achievestart,retract(achievement(nothing)),
@@ -44,14 +46,15 @@
 	interact(2) :- npc('Edythe The Kind',help),write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
 	interact(3) :- npc('Trader Terry', no),write('Welcome to my shop!! Are you here to buy my wares?'),nl,write('What do you mean you have no money?? I can see it right there!'),nl,
 		       write('Player Score: '), playerScore(S), write(S),nl,write('Yes!! That right there I need that!'), retract(npc('Trader Terry',_)), assert(npc('Trader Terry',yes)),nl,nl,location(int).
-	interact(3) :- npc('Trader Terry', yes), write('1. Tomato juice - 100 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Exit shop'),nl,playerScore(S), write('Currency: '),write(S),nl,
+	interact(3) :- npc('Trader Terry', yes), write('1. Tomato juice - 100 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Metal Spatula'),nl,write('5. Exit shop'),nl,playerScore(S), write('Currency: '),write(S),nl,
 		       write('Your Choice: '),read(X), buy(X),interact(3).
 	interact(_) :- townhall.
 	
 	buy(1) :- playerScore(S), S >= 100, NewS is S - 100, retract(playerScore(_)), assert(playerScore(NewS)), item(potion,X), NewX is X + 1, retract(item(potion,_)),assert(item(potion,NewX)), write('You received one potion! Now you have '),write(NewX),write(' potions!'),nl.
 	buy(2) :- playerScore(S), S >= 150, NewS is S - 150, retract(playerScore(_)), assert(playerScore(NewS)),item(pepper,X), NewX is X + 1, retract(item(pepper,_)),assert(item(pepper,NewX)), write('You received one pepper! Now you have '),write(NewX),write(' peppers!'),nl.
 	buy(3) :- playerScore(S), S >= 300, NewS is S - 300, retract(playerScore(_)), assert(playerScore(NewS)),item(blowtorch,X), NewX is X + 1, retract(item(blowtorch,_)),assert(item(blowtorch,NewX)), write('You received one blowtorch! Now you have '),write(NewX),write(' blowtorch!'),nl.
-	buy(4) :- write('Pleasure doing business with you!!'),nl, location(int).
+	buy(4) :- playerScore(S), S >= 500, NewS is S - 500, retract(playerScore(_)), assert(playerScore(NewS)),retractall(weapon(_)),assert(weapon('Metal Spatula')), write('You received a new weapon! '),nl.
+	buy(5) :- write('Pleasure doing business with you!!'),nl, location(int). 
 	buy(_) :- write('Not enought currency for this!!'),nl. 
 	
 	townhall :- nl,
@@ -325,8 +328,10 @@
 	advice(6) :- write('You gain score everytime you defeat an enemy and extra for bosses, but everytime you heal you lose points! (There is an achievement for this teehee)').
 	advice(7) :- write('Use pepper to avoid getting hit for one round!').
 	advice(8) :- write('You have limited resources! Make sure to make full use for them!').
-	advice(9) :- write('I like me some steak!').
+	advice(9) :- write('You should visit Trader Terry for more supplies!').
 	advice(10) :- write('I am running out of scripts to help you, please stop asking me for help.'),achievelazywriting.
+	advice(11) :- write('Each bosses have their unique abilities, watch out for their abilities!').
+	advice(12) :- write('Legend says only a few are worthy of wielding the legendary weapon, will it be you?').
 
 	score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,scorestatus.
 	score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,scorestatus.
