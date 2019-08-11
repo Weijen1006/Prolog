@@ -47,15 +47,15 @@
 	interact(3) :- npc('Trader Terry', no),write('Welcome to my shop!! Are you here to buy my wares?'),nl,write('What do you mean you have no money?? I can see it right there!'),nl,
 		       write('Player Score: '), playerScore(S), write(S),nl,write('Yes!! That right there I need that!'), retract(npc('Trader Terry',_)), assert(npc('Trader Terry',yes)),nl,nl,location(int).
 	interact(3) :- npc('Trader Terry', yes), write('1. Tomato juice - 100 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Metal Spatula'),nl,write('5. Exit shop'),nl,playerScore(S), write('Currency: '),write(S),nl,
-		       write('Your Choice: '),read(X), buy(X),interact(3).
+		       write('Your Choice: '),read(X), buy(X).
 	interact(_) :- townhall.
 	
-	buy(1) :- playerScore(S), S >= 100, NewS is S - 100, retract(playerScore(_)), assert(playerScore(NewS)), item(potion,X), NewX is X + 1, retract(item(potion,_)),assert(item(potion,NewX)), write('You received one potion! Now you have '),write(NewX),write(' potions!'),nl.
-	buy(2) :- playerScore(S), S >= 150, NewS is S - 150, retract(playerScore(_)), assert(playerScore(NewS)),item(pepper,X), NewX is X + 1, retract(item(pepper,_)),assert(item(pepper,NewX)), write('You received one pepper! Now you have '),write(NewX),write(' peppers!'),nl.
-	buy(3) :- playerScore(S), S >= 300, NewS is S - 300, retract(playerScore(_)), assert(playerScore(NewS)),item(blowtorch,X), NewX is X + 1, retract(item(blowtorch,_)),assert(item(blowtorch,NewX)), write('You received one blowtorch! Now you have '),write(NewX),write(' blowtorch!'),nl.
-	buy(4) :- playerScore(S), S >= 500, NewS is S - 500, retract(playerScore(_)), assert(playerScore(NewS)),retractall(weapon(_)),assert(weapon('Metal Spatula')), write('You received a new weapon! '),nl.
+	buy(1) :- playerScore(S), S >= 100, NewS is S - 100, retract(playerScore(_)), assert(playerScore(NewS)), item(potion,X), NewX is X + 1, retract(item(potion,_)),assert(item(potion,NewX)), write('You received one potion! Now you have '),write(NewX),write(' potions!'),nl,interact(3).
+	buy(2) :- playerScore(S), S >= 150, NewS is S - 150, retract(playerScore(_)), assert(playerScore(NewS)),item(pepper,X), NewX is X + 1, retract(item(pepper,_)),assert(item(pepper,NewX)), write('You received one pepper! Now you have '),write(NewX),write(' peppers!'),nl,interact(3).
+	buy(3) :- playerScore(S), S >= 300, NewS is S - 300, retract(playerScore(_)), assert(playerScore(NewS)),item(blowtorch,X), NewX is X + 1, retract(item(blowtorch,_)),assert(item(blowtorch,NewX)), write('You received one blowtorch! Now you have '),write(NewX),write(' blowtorch!'),nl,interact(3).
+	buy(4) :- playerScore(S), S >= 500, NewS is S - 500, retract(playerScore(_)), assert(playerScore(NewS)),retractall(weapon(_)),assert(weapon('Metal Spatula')), write('You received a new weapon! '),nl,interact(3).
 	buy(5) :- write('Pleasure doing business with you!!'),nl, location(int). 
-	buy(_) :- write('Not enought currency for this!!'),nl. 
+	buy(_) :- write('Not enought currency for this!!'),nl,interact(3). 
 	
 	townhall :- nl,
 		    write('          | N |          '),nl,
