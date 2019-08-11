@@ -291,7 +291,7 @@
 			write('Your Choice : ').
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
-	action(a) :- playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,(burn(yes),nl,write('You took burn damage, player Hp - 1'),reducthp;burn(no)),battlestatus,nl,\+hp(die),sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 	action(a) :- burn(yes), write('You took one burn damage'),deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 	action(a) :- hp(die),!.
 	action(a) :- enemy(_,_,Hp), Hp =< 0,!.
