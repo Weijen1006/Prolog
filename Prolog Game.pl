@@ -254,7 +254,10 @@
 	chest(crabshell) :- nl,write('As you walk around the Icy Riverside, you found a Crab Shell, seems like there is something inside?'),nl,
 			    write('Do you want to open it?'),nl,
 		      	    write('Your choice (yes/no) : '),read(X),open(crabshell,X).	
-
+	chest(wine) :- nl,write('As you walk around the , you found a Wine Bottle, seems like its not fill up with ordinary wine?'),nl,
+			    write('Do you want to open it?'),nl,
+		      	    write('Your choice (yes/no) : '),read(X),open(wine,X).	
+	
 	open(can,yes) :- get_single_char(_),item(co,yes),nl,write('You use the Can Opener to open the top of the Can instead of of putting it into the keyhole...'),get_single_char(_),nl,
 			 write('the Can Opener breaks, but the Can is opened!'),nl,item(pepper,X),
 			 write('You obtained 3 pepper!'),retractall(item(co,_)),assert(item(co,no)),retractall(item(pepper,_)),NewX is X + 3, assert(item(pepper,NewX)),nl.
@@ -266,6 +269,11 @@
 			       write('You obtained 2 blowtorch!'),retractall(item(mt,_)),assert(item(mt,no)),retractall(item(blowtorch,_)),NewX is X + 2, assert(item(blowtorch,NewX)),nl. 
 	open(crabshell,yes) :- item(mt,no),nl,write('You tried to open the Crab Shell, but its too hard and you cant break it open...'),nl.
 	open(crabshell,no) :- nl,write('You just ignore the Crab Shell and continue along the path...'),nl.
+	open(wine,yes) :- get_single_char(_),item(corkscrew,yes),nl,write('You use the the Corkscrew to open the Wine Bottle...'),get_single_char(_),nl,
+			 write('but you do it too hard... so the Corkscrew breaks... but the Wine Bottle is opened!'),nl,item(potion,X),
+			 write('You obtained 5 potion!'),retractall(item(corkscrew,_)),assert(item(corkscrew,no)),retractall(item(potion,_)),NewX is X + 5, assert(item(potion,NewX)),nl.
+	open(wine,yes) :- nl,item(corkscrew,no),write('You tried to open the Wine Bottle, but you slipped and everything in the Wine Bottle spill out...'),nl.
+	open(wine,no) :- nl,write('You just ignore the Wine Bottle and continue along the path...'),nl.
 	open(X,_) :- write('Invalid Input, Please try again'),nl,write('Your choice (yes/no) : '),read(Y),nl,open(X,Y).	
 
 	%Utility
