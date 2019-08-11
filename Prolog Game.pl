@@ -1,3 +1,5 @@
+	menu :- poster,nl,nl,write('Type anything to continue.....'),get_single_char(_),nl,nl,start.
+	
 	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),retractall(burn(_)),retractall(stage(_)),
 		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
 		 assert(item(potion,10)),
@@ -34,6 +36,15 @@
 	write('    #    ######      #   #     #      ####### #    # #    # #      #  # #   #   #    # #####  #         #    # #         #       #      #      #    # #      #  # # '),nl,
 	write('    #    #    # #    #   #     #      #     # #    #  #  #  #      #   ##   #   #    # #   #  #         #    # #         #     # #      #      #    # #      #   ## '),nl,
 	write('    #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # '),get_single_char(_).
+	
+	endingpost :-
+	write('	#######                                                                                                          '),nl,
+	write('    #    #    #   ##   #    # #    #  ####     ######  ####  #####     #####  #        ##   #   # # #    #  ####  '),nl,
+	write('    #    #    #  #  #  ##   # #   #  #         #      #    # #    #    #    # #       #  #   # #  # ##   # #    # '),nl,
+	write('    #    ###### #    # # #  # ####    ####     #####  #    # #    #    #    # #      #    #   #   # # #  # #      '),nl,
+	write('    #    #    # ###### #  # # #  #        #    #      #    # #####     #####  #      ######   #   # #  # # #  ### '),nl,
+	write('    #    #    # #    # #   ## #   #  #    #    #      #    # #   #     #      #      #    #   #   # #   ## #    # '),nl,
+	write('    #    #    # #    # #    # #    #  ####     #       ####  #    #    #      ###### #    #   #   # #    #  ####  '),nl.
 
 	%NPC
 	interact(1) :- 	npc('Helpful David',no), write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
@@ -89,6 +100,7 @@
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
 
+	ending :- write('You defeated all three areas!! Congratulations!!'),nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost.
 	ending1(yes) :- fakeending.
 	ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
 	ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
@@ -124,11 +136,11 @@
 	playgame(_) :- nl,write('Mystery Man : I dont understand you, please tell me your choice again'),nl,
 		       write('Your choice (yes/no) : '), read(X),playgame(X).
 	
-	fortune(X,Y) :- playerloc(ice), X == Y, nl,write('You just got the fortune number correcty, its a Ice Cream Scoop in there!!!'),nl, 
+	fortune(X,Y) :- playerloc(ice), X == Y, nl,write('You just got the fortune cookie correcty, its a Ice Cream Scoop in there!!!'),nl, 
 			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Ice Cream Scoop').
-	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune number correcty, its a pair of Chopsticks in there!!!'),nl, 
+	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune cookie correcty, its a pair of Chopsticks in there!!!'),nl, 
 			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopsticks').
-	fortune(X,Y) :- X \= Y,nl, write('You got the fortune number wrong, the box exploded!    Player hp-2'),deducthp,deducthp.
+	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp.
 	
 	%Neutral faction
 	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(50),chest(can),fight(50).
@@ -159,6 +171,12 @@
 	use(pepper) :- item(pepper,X), X > 0, NewX is X - 1, retractall(item(pepper,_)), assert(item(pepper,NewX)), retractall(sneeze(_)),assert(sneeze(yes)),nl,enemy(_,Name,_),
 		       write('1 pepper used, '),write(NewX),write(' pepper left'),nl,write('Looks like '),write(Name),write(' is about to sneeze !'),nl.
 	use(blowtorch) :- item(blowtorch,0),nl, write('You have no blowtorch left'),nl.
+	use(blowtorch) :- enemy(ice,_,_),item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
+			  enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
+			  write('You used blowtorch on the enemy, 3 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
+	use(blowtorch) :- enemy(boss,'Frozen Tuna',_),item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
+			  enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
+			  write('You used blowtorch on the enemy, 3 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
 	use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
 			  enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
 			  write('You used blowtorch on the enemy, 2 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
@@ -208,6 +226,7 @@
 	weaponattack('Wooden Spatula') :- random(1,101,X), woodenspatula(X).
 	weaponattack('Metal Spatula') :- random(1,101,X), metalspatula(X).
 	weaponattack('Ice Cream Scoop') :- random(1,101,X), icecreamscoop(X).
+	weaponattack('Chopstick') :- random(1,101,X), chopstick(X).
 	weaponattack('Frying Pan') :- enemy(Type,_,_), random(1,101,X),fryingpan(Type,X).
 	woodenspatula(X) :- X =< 35,nl, write('Your attack missed!'),nl.
 	woodenspatula(X) :- X > 35,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
@@ -215,6 +234,9 @@
 	metalspatula(X) :- X > 25,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	icecreamscoop(X) :- X > 25, enemy(ice,_,_),nl,write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	icecreamscoop(X) :- metalspatula(X).
+	chopstick(X) :- X > 25, enemy(fire,_,_), nl, write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	chopstick(X) :- X > 25, enemy(boss,'Dai Bao',_), nl, write('Its super effective! 3 damage dealt'), nl, enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	chopstick(X) :- metalspatula(X).
 	fryingpan(boss,X) :- X =< 30,nl,write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),retract(stun(_)),assert(stun(yes)),write('You have stunned the enemy'),nl.
 	fryingpan(boss,X) :- X > 30,nl, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	fryingpan(X,_) :- X \= boss, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
@@ -349,10 +371,10 @@
 	advice(11) :- write('Each bosses have their unique abilities, watch out for their abilities!').
 	advice(12) :- write('Legend says only a few are worthy of wielding the legendary weapon, will it be you?').
 
-	score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,scorestatus.
-	score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,scorestatus.
-	score(fire) :- playerScore(S), X is 200, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 200 score!!'),nl,nl,scorestatus.
-	score(boss) :- playerScore(S), X is 500, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 500 score!!'),nl,nl,scorestatus.
+	score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
+	score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
+	score(fire) :- playerScore(S), X is 200, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 200 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
+	score(boss) :- playerScore(S), X is 500, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 500 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
 	scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
 		       playerScore(Y), write('Player Score : '), write(Y),nl.
 
@@ -378,6 +400,7 @@
 	achievedown :- \+achievement('Not ready for adventure...'), assert(achievement('Not ready for adventure...')),write('You unlocked an achievement : Not ready for adventure...'),nl,nl;!.
 	achieveuseless :- \+achievement('Not so useful now!!'), assert(achievement('Not so useful now!!')),nl, write('You unlocked an achievement : Not so useful now!!');!.
 	achievelazywriting :- \+achievement('Lazy writing'), assert(achievement('Lazy writing')),nl, write('You unlocked an achievement : Lazy writing');!.
+	achievescore :- \+achievement('Score for the sky!!'), assert(achievement('Score for the sky!!')), nl, write('You unlocked an achievement : Score for the sky!!');!.
 	achieverng :- \+achievement('RNGesus'), assert(achievement('RNGesus')),nl,write('You unlocked an achievement : RNGesus'),nl,nl;!.
 
 	achievement :- findall(X,achievement(X),List), nl,write('Achievements obtained :'),nl,printachieve(List).
