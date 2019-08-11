@@ -108,36 +108,36 @@
 
 	end :- achievement.
 
+	%Mini Game
+	minigame(ice) :- get_single_char(_),write('As you enter the Icy Riverside, you see a mystery man in black cloak and he noticed you'),get_single_char(_),nl,
+			 write('Hello young man, do you want to play a game with me? the reward is something very helpful in this area (evil smile)'),nl,
+			 write('Your choice (yes/no) : '), read(X),playgame(X).
+	minigame(fire) :- get_single_char(_),write('As you enter the Fiery Hill, you see the mystery man in black cloak again'),get_single_char(_),nl,
+			 write('Hello young man, here we meet again, do you want to play a game with me? the reward is something very helpful in this area (evil smile)'),nl,
+			 write('Your choice (yes/no) : '), read(X),playgame(X).
+
+	playgame(yes) :- nl,write('I see, you are a man of culture as well, let us begin!'),nl,
+			 write('There are 4 fortune cookies here, pick one and test your fortune !'),nl,
+			 write('Your Choice  (1-4) : '),read(X),random(1,5,Y), fortune(X,Y).
+	playgame(no) :- get_single_char(_),nl, write('Ohh... too bad then, we shall meet again next time'),nl, get_single_char(_),
+			write('The mystery man disappear !'),nl,get_single_char(_).
+	playgame(_) :- nl,write('Mystery Man : I dont understand you, please tell me your choice again'),nl,
+		       write('Your choice (yes/no) : '), read(X),playgame(X).
+	
+	fortune(X,Y) :- playerloc(ice), X == Y, nl,write('You just got the fortune number correcty, its a Ice Cream Scoop in there!!!'),nl, 
+			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Ice Cream Scoop').
+	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune number correcty, its a pair of Chopsticks in there!!!'),nl, 
+			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopsticks').
+	fortune(X,Y) :- X \= Y,nl, write('You got the fortune number wrong, the box exploded!    Player hp-2'),deducthp,deducthp.
+	
 	%Neutral faction
 	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(50),chest(can),fight(50).
 
-	fight(X) :- playerloc(Place), X =< 50, random(1,5,Y),encounter(Y,Place).
-	fight(_) :- playerloc(Place),nl, write('Boss fight time!'),bossfight(Place).
-
-	encounter(1,neutral) :- fightmeatball.
-	encounter(2,neutral) :- fighttarrot.
-	encounter(3,neutral) :- fightonion.
-	encounter(4,neutral) :- fightsalad.
-	encounter(1,ice) :- fighticecube.
-	encounter(2,ice) :- fightvanilla.
-	encounter(3,ice) :- fightscope.
-	encounter(4,ice) :- fightbanana.
-	encounter(1,fire) :- fightpome.
-	encounter(2,fire) :- fightsoup.
-	encounter(3,fire) :- fightfrench.
-	encounter(4,fire) :- fightpizza.
-
-	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
-	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
-	crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
-	crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
-	crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).
-
 	%Ice faction
-	ice :- retract(playerloc(_)), assert(playerloc(ice)),random(1,101,X),event(X),chest(wine),fight(50).
+	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),random(1,101,X),event(X),chest(crabshell),fight(50).
 
 	%Fire faction
-	fire :- retract(playerloc(_)), assert(playerloc(fire)),random(1,101,X),event(X),chest(crabshell),fight(50).
+	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),random(1,101,X),event(X),chest(wine),fight(50).
 
 	%HP
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
@@ -221,11 +221,27 @@
 
 	changeweapon(yes,X) :- nl,write('You are now holding '),write(X),give(X).
 	changeweapon(no,X) :- nl,write('You ignore the '),write(X).
-	changeweapon(_,X) :- nl,write('Invalid Input, Please try again'),nl,write('Your choice : '),read(Y),changeweapon(Y,X),nl.
+	changeweapon(_,X) :- nl,write('Invalid Input, Please try again'),nl,write('Your choice (yes/no) : '),read(Y),changeweapon(Y,X),nl.
 
 	%Battle
 	battle :- \+hp(die), enemy(_,_,Y), Y > 0, chooseaction, read(Z), action(Z), battle.
 	battle :- (hp(die);enemy(_,_,Y), Y =< 0),result.
+
+	fight(X) :- playerloc(Place), X =< 50, random(1,5,Y),encounter(Y,Place).
+	fight(_) :- playerloc(Place),nl, write('Boss fight time!'),bossfight(Place).
+
+	encounter(1,neutral) :- fightmeatball.
+	encounter(2,neutral) :- fighttarrot.
+	encounter(3,neutral) :- fightonion.
+	encounter(4,neutral) :- fightsalad.
+	encounter(1,ice) :- fighticecube.
+	encounter(2,ice) :- fightvanilla.
+	encounter(3,ice) :- fightscope.
+	encounter(4,ice) :- fightbanana.
+	encounter(1,fire) :- fightpome.
+	encounter(2,fire) :- fightsoup.
+	encounter(3,fire) :- fightfrench.
+	encounter(4,fire) :- fightpizza.
 
 	fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
 	fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
@@ -241,8 +257,7 @@
 	fightpizza :- write('A Pineapple pizza appears ! (EWWWWW)'), assert(enemy(fire,'Pineapple Pizza', 6)),nl,nl,battle.
 	
 	%Boss
-	
-	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',10)),nl,nl,battlestatus,nl,battle.
+	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
 	bossfight(ice) :- write('Frozen Tuna appears!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
 	bossfight(fire) :- write('Dai Bao appears!'),nl,write('It shapes just like a volcano... That looks dangerous!'), assert(enemy(boss,'Dai Bao', 15)),nl,nl,battlestatus,nl,battle.
 
@@ -285,7 +300,7 @@
 	chest(crabshell) :- nl,write('As you walk around the Icy Riverside, you found a Crab Shell, seems like there is something inside?'),nl,
 			    write('Do you want to open it?'),nl,
 		      	    write('Your choice (yes/no) : '),read(X),open(crabshell,X).	
-	chest(wine) :- nl,write('As you walk around the , you found a Wine Bottle, seems like its not fill up with ordinary wine?'),nl,
+	chest(wine) :- nl,write('As you walk around the Fiery Hill, you found a Wine Bottle, seems like its not fill up with ordinary wine?'),nl,
 			    write('Do you want to open it?'),nl,
 		      	    write('Your choice (yes/no) : '),read(X),open(wine,X).	
 	
@@ -341,7 +356,7 @@
 	scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
 		       playerScore(Y), write('Player Score : '), write(Y),nl.
 
-
+	%Event
 	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R).
 	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R).
 	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
@@ -349,10 +364,16 @@
 	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Can Openner!'),nl.
 	event(_) :- write('You continued your journey without any interesting events happening...').
 
+	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
+	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
+	crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
+	crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
+	crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).	
+
 	snatch(X) :- item(potion,Y), Y >= X, write('Tomato Juice - '), write(X), NewY is Y - X, retractall(item(potion,_)), assert(item(potion,NewY)), write('     '),write(NewY),write(' Tomato Juice left'),nl.
 	snatch(X) :- item(potion,Y), Y < X, random(1,X,R), snatch(R).
 
-	%achievement
+	%Achievement
 	achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl,nl;!.
 	achievedown :- \+achievement('Not ready for adventure...'), assert(achievement('Not ready for adventure...')),write('You unlocked an achievement : Not ready for adventure...'),nl,nl;!.
 	achieveuseless :- \+achievement('Not so useful now!!'), assert(achievement('Not so useful now!!')),nl, write('You unlocked an achievement : Not so useful now!!');!.
