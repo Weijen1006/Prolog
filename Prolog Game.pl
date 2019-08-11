@@ -242,7 +242,7 @@
 	
 	%Boss
 	
-	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
+	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',10)),nl,nl,battlestatus,nl,battle.
 	bossfight(ice) :- write('Frozen Tuna appears!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
 	bossfight(fire) :- write('Dai Bao appears!'),nl,write('It shapes just like a volcano... That looks dangerous!'), assert(enemy(boss,'Dai Bao', 15)),nl,nl,battlestatus,nl,battle.
 
