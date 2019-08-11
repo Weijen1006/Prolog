@@ -271,7 +271,7 @@
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,townhall.
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,townhall.
 	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,townhall.
 	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battle.
 	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dao Bao',5)), retract(stage(3)), assert(stage(3)),battle.
@@ -318,8 +318,8 @@
 
 	loot(1) :- \+weapon('Frying Pan'),weapon(Weapon), achieverng, write('You found the LEGENDERY Frying Pan!!!, do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Y),changeweapon(Y,'Frying Pan');random(2,101,R),loot(R).
 	loot(X) :- X > 1, X =< 60, write('You have obtained 1 tomato juice!'), item(potion,Y), NewY is Y + 1, retractall(item(potion,_)), assert(item(potion,NewY)).
-	loot(X) :- X >60, X =< 80, write('You have obtained 1 blowtorch!'), item(blowtorch,Y), NewY is Y + 1, retractall(item(blowtorch,_)),assert(item(blowtorch,NewY)).
-	loot(X) :- X >80, X =< 100,write('You have obtained 1 pepper!'), item(pepper,Y), NewY is Y + 1, retractall(item(pepper,_)), assert(item(pepper,NewY)).
+	loot(X) :- X >60, X =< 75, write('You have obtained 1 blowtorch!'), item(blowtorch,Y), NewY is Y + 1, retractall(item(blowtorch,_)),assert(item(blowtorch,NewY)).
+	loot(X) :- X >75, X =< 95,write('You have obtained 1 pepper!'), item(pepper,Y), NewY is Y + 1, retractall(item(pepper,_)), assert(item(pepper,NewY)).
 
 	advice(1) :- write('Did you know? Tomato juice heals your hp full!').
 	advice(2) :- write('Edythe will sometimes provide you supplies! You should pay a visit to the old lady often.').
@@ -343,7 +343,10 @@
 
 
 	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R).
-	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juices are being snatched'),nl,random(1,4,R),snatch(R).
+	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R).
+	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
+	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
+	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Can Openner!'),nl.
 	event(_) :- write('You continued your journey without any interesting events happening...').
 
 	snatch(X) :- item(potion,Y), Y >= X, write('Tomato Juice - '), write(X), NewY is Y - X, retractall(item(potion,_)), assert(item(potion,NewY)), write('     '),write(NewY),write(' Tomato Juice left'),nl.
