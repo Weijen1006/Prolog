@@ -119,6 +119,10 @@
 	encounter(2,ice) :- fightvanilla.
 	encounter(3,ice) :- fightscope.
 	encounter(4,ice) :- fightbanana.
+	encounter(1,fire) :- fightpome.
+	encounter(2,fire) :- fightsoup.
+	encounter(3,fire) :- fightfrench.
+	encounter(4,fire) :- fightpizza.
 
 	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
 	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
@@ -169,6 +173,8 @@
 	enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks!     Player hp - 2'),nl,nl,deducthp,deducthp.
 	enemyattack('Spaghetti Regretti',_) :- round(X) ,X \= 4, write('Spaghetti Regretti attack!     Player hp - 1'),nl,nl,deducthp,retractall(round(_)), NewX is X + 1, assert(round(NewX)).
 	enemyattack('Spaghetti Regretti',_) :- round(4), write('Spaghetti Regretti performs a double attack!     Player hp - 2'),nl,nl,deducthp,deducthp,retractall(round(_)), assert(round(1)).
+	
+	%Ice Area
 	enemyattack('Ice Cube',X) :- X >= 39 ,X =< 59, write('Ice Cube slides towards you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Ice Cube',X) :- X >= 60 ,X =< 80, write('Ice Cube freezes you this turn!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
 	enemyattack('Vanilla Shake', X) :- X =< 45 , X >= 25, write('Vanilla Shake dances all over you!     Player hp - 1'),nl,nl,deducthp.
@@ -180,6 +186,18 @@
 	enemyattack('Frozen Tuna', X) :- round(Y), Y = 3, X >= 0, X =< 79, write('Frozen Tuna slaps you!     Player hp - 2'),nl,nl, deducthp, deducthp, retract(round(_)), assert(round(1)). 
 	enemyattack('Frozen Tuna', X) :- round(Y), Y = 3, X >= 80, X =< 100, write('Frozen Tuna spits frozen water at you!     Player hp - 2'),nl,nl,deducthp,deducthp,retract(playerstun(_)),assert(playerstun(yes)), retract(round(_)), assert(round(1)).
 	enemyattack('Frozen Tuna', _) :- round(Y), NewY is Y + 1, retract(round(_)), assert(round(NewY)), write('Frozen Tuna is getting ready to attack!'),nl.
+	
+	%Fire Area
+	enemyattack('Pomegrenade',_) :- round(Y), Y = 4, write('Pomegrenade exploded and killed you!'),retract(hp(_)),assert(hp(die)).
+	enemyattack('Pomegrenade',_) :- round(Y), Y = 3, write('Pomegrenade is going explode next round!').
+	enemyattack('Pomegrenade',_) :- round(Y), NewY is Y + 1, write('Pomegrenade is getting ready to explode!'), retract(round(_)),assert(round(NewY)).
+	enemyattack('Stupendous Soup', X) :- X > 80, X =< 100, write('Stupendous Soup spills hot soup at you!'),nl,write('It tastes impressive but it is too hot and it burned you!     Player hp - 1'),retract(burn(_)),assert(burn(yes)),nl,nl,deducthp.
+	enemyattack('Stupendous Soup', X) :- X > 40, X =< 80, write('Stupendous Soup hits you with his spoon!    Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Pineapple Pizza', X) :- X > 20, X =< 100, write('Pineapple Pizza shoots hot melted cheese on you! '),nl,write('It burns your skin!     Player hp - 1'),nl,nl,retract(burn(_)),assert(burn(yes)),deducthp.
+	enemyattack('Pineapple Pizza', X) :- X >= 0, X =< 20,write('Pineapple Pizza flung itself at you!    Player hp - 1'),nl,nl,deducthp.
+	enemyattack('French Flies', X) :- X > 40, X =< 80, write('A Swarm of French Flies charged you!    Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Dai Bao', X) :- X > 30, X =< 100, write('Dai Bao slams on you!     Player hp - 1'),nl,nl,deducthp.
+		
 		
 	enemyattack(_,_) :- enemy(_,Name,_),write('You managed to dodge '),write(Name),write(' attack'),nl,nl. 
 
@@ -214,11 +232,16 @@
 	fightvanilla :- write('A Vanilla Shake appears !'),nl,write('It seems ready to have a dance off against you!'), assert(enemy(ice,'Vanilla Shake', 5)),nl,nl,battle.
 	fightscope :- write('A Triple Scope is taking aim on you!'),assert(enemy(ice,'Triple Scope', 3)),nl,nl,battle.
 	fightbanana :- write('A Banana Skit appears !'),nl,write('Clemen thought to himself "That is a funny looking banana split."'),assert(enemy(ice,'Banana Skit', 5)),nl,nl,battle.
+	fightpome :- write('A Pome...GRENADE appears !'),nl,write('It looks like it is going to explode!'), assert(enemy(fire,'Pomegrenade', 2)),nl,nl,battle.
+	fightsoup :- write('A Stupendous Soup appears !'),nl,write('Awwwww that is hot!!'), assert(enemy(fire,'Stupendous Soup', 5)),assert(round(1)),nl,nl,battle.
+	fightfrench :- write(' A group of French Flies appears !'),nl, write('It is raining french flies!!'), assert(enemy(fire,'French Flies', 6)),nl,nl,battle.
+	fightpizza :- write('A Pineapple pizza appears ! (EWWWWW)'), assert(enemy(fire,'Pineapple Pizza', 6)),nl,nl,battle.
 	
 	%Boss
 	
 	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
 	bossfight(ice) :- write('Frozen Tuna appears!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
+	bossfight(fire) :- write('Dai Bao appears!'),nl,write('It shapes just like a volcano... That looks dangerous!'), assert(enemy(boss,'Dai Bao', 15)),nl,nl,battlestatus,nl,battle.
 
 	chooseaction :- write('i - view your items'),nl,
 			write('a - use your weapon to attack enemy'),nl,
@@ -229,6 +252,7 @@
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
 	action(a) :- playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,(burn(yes),nl,write('You took burn damage, player Hp - 1'),reducthp;burn(no)),battlestatus,nl,\+hp(die),sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- burn(yes), write('You took one burn damage'),deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 	action(a) :- hp(die),!.
 	action(a) :- enemy(_,_,Hp), Hp =< 0,!.
 	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
@@ -245,6 +269,9 @@
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
 	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,townhall.
+	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battle.
+	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dao Bao',5)), retract(stage(3)), assert(stage(3)),battle.
+	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)).
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 	%Chest	
