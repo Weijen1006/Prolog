@@ -138,18 +138,18 @@
 	
 	fortune(X,Y) :- playerloc(ice), X == Y, nl,write('You just got the fortune cookie correcty, its a Ice Cream Scoop in there!!!'),nl, 
 			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Ice Cream Scoop').
-	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune cookie correcty, its a Chopstick in there!!!'),nl, 
-			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopstick').
+	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune cookie correcty, its a pair of Chopsticks in there!!!'),nl, 
+			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopsticks').
 	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp.
 	
 	%Neutral faction
-	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),random(1,101,X),event(X),random(1,101,Y),event(Y),chest(can),fight(50).
+	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%Ice faction
-	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),random(1,101,X),event(X),random(1,101,Y),event(Y),chest(crabshell),fight(50).
+	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),write('Section 2-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),fight(50).
 
 	%Fire faction
-	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),random(1,101,X),event(X),random(1,101,Y),event(Y),chest(wine),fight(50).
+	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),write('Section 3-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),fight(50).
 
 	%HP
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
@@ -279,9 +279,9 @@
 	fightpizza :- write('A Pineapple pizza appears ! (EWWWWW)'), assert(enemy(fire,'Pineapple Pizza', 6)),nl,nl,battle.
 	
 	%Boss
-	bossfight(neutral) :- write('Spaghetti Regretti appears !'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
-	bossfight(ice) :- write('Frozen Tuna appears!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
-	bossfight(fire) :- write('Dai Bao appears!'),nl,write('It shapes just like a volcano... That looks dangerous!'), assert(enemy(boss,'Dai Bao', 15)),nl,nl,battlestatus,nl,battle.
+	bossfight(neutral) :- write('As you keep venturing forward into the garden,'),write('You see an area full of vines covering the ground.'),get_single_char(_),write('Suddenly, Spaghetti Regretti appears !'),nl,write('It looks at you menacingly!'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
+	bossfight(ice) :- write('You encounter a huge refridgerator in the middle of nowhere.'),write(' You decided to explore the inside of this large container.'),get_single_char(_),nl,write('As you walked into the refridgerator, you feel cold air around you...'),write(' You look up and you see a Frozen Tuna staring back at you!'),get_single_char(_),write('Frozen Tuna appears!'),nl,write('Frozen stares at you with a hostile sense!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
+	bossfight(fire) :- write('You hear loud snoring sounds from far away, knowing that it might be the one last ingredient that you are finding,'),get_single_char(_),write(' you move quietly in the shadows to approach the source of the sound.'),nl,write('A giant bun is just sleeping there appearantly.'),write('You tried to get a sneak attack but you stepped on a twig and thus...'),nl,write('Dai Bao awakens! (Use this link for music -> https://www.youtube.com/watch?v=XUhVCoTsBaM)'),nl,write('It shapes just like a volcano... That looks dangerous!'), assert(enemy(boss,'Dai Bao', 15)),nl,nl,battlestatus,nl,battle.
 
 	chooseaction :- write('i - view your items'),nl,
 			write('a - use your weapon to attack enemy'),nl,
@@ -308,11 +308,11 @@
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,write('You have returned back to townhall.'),townhall.
-	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,write('You have returned back to townhall.'),townhall.
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,townhall.
+	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,townhall.
 	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battle.
 	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dao Bao',5)), retract(stage(3)), assert(stage(3)),battle.
-	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)),ending.
+	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)).
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 
 	%Chest	
@@ -335,7 +335,7 @@
 			       write('but turns out Meat Tenderizer is not a proper tool to open Crab Shell, so it breaks...'),get_single_char(_),nl,
 			       write('Suddenly, the Crab Shell opened'),nl,item(blowtorch,X),
 			       write('You obtained 2 blowtorch!'),retractall(item(mt,_)),assert(item(mt,no)),retractall(item(blowtorch,_)),NewX is X + 2, assert(item(blowtorch,NewX)),nl. 
-	open(crabshell,yes) :- item(mt,no),nl,write('You tried to open the Crab Shell, but its too hard and you cant break it open...'),nl.
+	open(crabshell,yes) :- item(mt,no),nl,write('You tried to open the Crab Shell, but its too hot and you burned your hands on the process...'),nl.
 	open(crabshell,no) :- nl,write('You just ignore the Crab Shell and continue along the path...'),nl.
 	open(wine,yes) :- get_single_char(_),item(corkscrew,yes),nl,write('You use the the Corkscrew to open the Wine Bottle...'),get_single_char(_),nl,
 			 write('but you do it too hard... so the Corkscrew breaks... but the Wine Bottle is opened!'),nl,item(potion,X),
@@ -380,11 +380,11 @@
 
 	%Event
 	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R).
-	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R).
+	event(X) :- get_single_char(_),X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),get_single_char(_),nl,random(1,4,R),snatch(R),get_single_char(_).
 	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
 	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
 	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Can Openner!'),nl.
-	event(_) :- write('You continued your journey without any interesting events happening...').
+	event(_) :- write('You continued your journey without any interesting events happening...'),nl.
 
 	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
 	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
@@ -412,4 +412,3 @@
 	give('Frying Pan') :- retract(weapon(_)), assert(weapon('Frying Pan')).
 	give('Metal Spatula') :- retract(weapon(_)), assert(weapon('Metal Spatula')).
 	give('Ice Cream Scoop') :- retract(weapon(_)), assert(weapon('Ice Cream Scoop')).
-	give('Chopstick') :- retract(weapon(_)), assert(weapon('Chopstick')).
