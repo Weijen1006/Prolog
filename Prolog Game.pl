@@ -165,7 +165,7 @@
 	%item
 	use(potion) :- item(potion,0),nl, write('You have no tomato juice left'),nl.
 	use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(healthy)),nl,
-		       write('1 tomato juice used, player health recovered to healthy !'),nl,(burn(yes),retract(burn(_)),assert(burn(no)),write('Burn Status removed!')),nl,
+		       write('1 tomato juice used, player health recovered to healthy !'),nl,(burn(yes),retract(burn(_)),assert(burn(no)),write('Burn Status removed!');!),nl,
 		       write(NewX), write(' tomato juice left'),nl.
 	use(pepper) :- item(pepper,0),nl,write('You have no pepper left'),nl.
 	use(pepper) :- item(pepper,X), X > 0, NewX is X - 1, retractall(item(pepper,_)), assert(item(pepper,NewX)), retractall(sneeze(_)),assert(sneeze(yes)),nl,enemy(_,Name,_),
