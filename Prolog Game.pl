@@ -143,13 +143,13 @@
 	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp.
 	
 	%Neutral faction
-	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),event(50),chest(can),fight(50).
+	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),random(1,101,X),event(X),random(1,101,Y),event(Y),chest(can),fight(50).
 
 	%Ice faction
-	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),random(1,101,X),event(X),chest(crabshell),fight(50).
+	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),random(1,101,X),event(X),random(1,101,Y),event(Y),chest(crabshell),fight(50).
 
 	%Fire faction
-	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),random(1,101,X),event(X),chest(wine),fight(50).
+	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),random(1,101,X),event(X),random(1,101,Y),event(Y),chest(wine),fight(50).
 
 	%HP
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
