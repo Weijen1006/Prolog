@@ -386,10 +386,10 @@
 	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl.
 	event(_) :- write('You continued your journey without any interesting events happening...'),nl.
 
-	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
-	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
-	crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)).
-	crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
+	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
+	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
+	crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
+	crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
 	crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).	
 
 	snatch(X) :- item(potion,Y), Y >= X, write('Tomato Juice - '), write(X), NewY is Y - X, retractall(item(potion,_)), assert(item(potion,NewY)), write('     '),write(NewY),write(' Tomato Juice left'),nl.
