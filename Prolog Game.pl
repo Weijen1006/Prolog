@@ -294,12 +294,12 @@
 	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- burn(yes),nl, write('You took one burn damage'),nl,deducthp,\+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- hp(die),!.
-	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
-	action(t) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemyround.
+	action(t) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemyround.
 	action(t) :- use(potion), nl,chooseaction,read(X),action(X).
-	action(p) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(p) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemyround.
 	action(p) :- use(pepper), nl,chooseaction,read(X),action(X).
-	action(b) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(b) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemyround.
 	action(b) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, chooseaction,read(X),action(X).
 	action(b) :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
