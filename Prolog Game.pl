@@ -38,7 +38,7 @@
 	write('    #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # '),get_single_char(_).
 	
 	endingpost :-
-	write('	#######                                                                                                          '),nl,
+        write(' #######                                                                                                          '),nl,
 	write('    #    #    #   ##   #    # #    #  ####     ######  ####  #####     #####  #        ##   #   # # #    #  ####  '),nl,
 	write('    #    #    #  #  #  ##   # #   #  #         #      #    # #    #    #    # #       #  #   # #  # ##   # #    # '),nl,
 	write('    #    ###### #    # # #  # ####    ####     #####  #    # #    #    #    # #      #    #   #   # # #  # #      '),nl,
@@ -100,7 +100,7 @@
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
 
-	ending :- nl,write('You defeated all three areas!! Congratulations!!'),nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,end,nl,nl,endingpost.
+	ending :- nl,write('You defeated all three areas!! Congratulations!!'),nl,achieveend,nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost,nl,nl,end.
 	ending1(yes) :- fakeending.
 	ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
 	ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
@@ -332,18 +332,18 @@
 			 write('the Can Opener breaks, but the Can is opened!'),nl,item(pepper,X),
 			 write('You obtained 3 pepper!'),retractall(item(co,_)),assert(item(co,no)),retractall(item(pepper,_)),NewX is X + 3, assert(item(pepper,NewX)),nl.
 	open(can,yes) :- nl,item(co,no),write('You tried to open the Can, but its too hard and you cant break it open...'),nl.
-	open(can,no) :- nl,write('You just ignore the peculiar Can and continue along the path...'),nl.
+	open(can,no) :- nl,write('You just ignore the peculiar Can and continue along the path...'),nl,(item(co,yes),achievenohelp;!),get_single_char(_).
 	open(crabshell,yes) :- get_single_char(_),item(mt,yes),nl,write('You use the Meat Tenderizer to hit the Crab Shell...'),get_single_char(_),nl,
 			       write('but turns out Meat Tenderizer is not a proper tool to open Crab Shell, so it breaks...'),get_single_char(_),nl,
 			       write('Suddenly, the Crab Shell opened'),nl,item(blowtorch,X),
 			       write('You obtained 2 blowtorch!'),retractall(item(mt,_)),assert(item(mt,no)),retractall(item(blowtorch,_)),NewX is X + 2, assert(item(blowtorch,NewX)),nl. 
 	open(crabshell,yes) :- item(mt,no),nl,write('You tried to open the Crab Shell, but its too hot and you burned your hands on the process...'),nl.
-	open(crabshell,no) :- nl,write('You just ignore the Crab Shell and continue along the path...'),nl.
+	open(crabshell,no) :- nl,write('You just ignore the Crab Shell and continue along the path...'),nl,(item(mt,yes),achievenohelp;!),get_single_char(_).
 	open(wine,yes) :- get_single_char(_),item(corkscrew,yes),nl,write('You use the the Corkscrew to open the Wine Bottle...'),get_single_char(_),nl,
 			 write('but you do it too hard... so the Corkscrew breaks... but the Wine Bottle is opened!'),nl,item(potion,X),
 			 write('You obtained 5 potion!'),retractall(item(corkscrew,_)),assert(item(corkscrew,no)),retractall(item(potion,_)),NewX is X + 5, assert(item(potion,NewX)),nl.
 	open(wine,yes) :- nl,item(corkscrew,no),write('You tried to open the Wine Bottle, but you slipped and everything in the Wine Bottle spill out...'),nl.
-	open(wine,no) :- nl,write('You just ignore the Wine Bottle and continue along the path...'),nl.
+	open(wine,no) :- nl,write('You just ignore the Wine Bottle and continue along the path...'),nl,(item(corkscrew,yes),achievenohelp;!),get_single_char(_).
 	open(X,_) :- write('Invalid Input, Please try again'),nl,write('Your choice (yes/no) : '),read(Y),nl,open(X,Y).	
 
 	%Utility
@@ -404,6 +404,8 @@
 	achievelazywriting :- \+achievement('Lazy writing'), assert(achievement('Lazy writing')),nl, write('You unlocked an achievement : Lazy writing');!.
 	achievescore :- \+achievement('Score for the sky!!'), assert(achievement('Score for the sky!!')), nl, write('You unlocked an achievement : Score for the sky!!');!.
 	achieverng :- \+achievement('RNGesus'), assert(achievement('RNGesus')),nl,write('You unlocked an achievement : RNGesus'),nl,nl;!.
+	achievenohelp :- \+achievement('I dont need help!'),assert(achievement('I dont need help!')),nl,write('You unlocked an achievement : I dont need help!'),nl;!.
+	achieveend :- \+achievement('Thanks for playing'),assert(achievement('Thanks for playing')),nl,write('You unlocked an achievement : Thanks for playing'),nl;!.
 
 	achievement :- findall(X,achievement(X),List), nl,write('Achievements obtained :'),nl,printachieve(List).
 
