@@ -189,7 +189,7 @@
 	%Monster
 	enemyattack('Meatball',X) :- X > 40, write('Meatball attack!     Player hp - 1'), nl,nl, deducthp.
 	enemyattack('Tarrot',X) :- X > 15,X =< 45, write('Tarrot card attack!     Player hp - 1'),nl,nl,deducthp.
-	enemyattack('Tarrot',X) :- X > 45, write('Tarrot pull out its regen card !     Tarrot hp + 1'),nl,nl,enemy(Type,Name,Hp), Newhp is Hp + 1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	enemyattack('Tarrot',X) :- X > 45, X =< 70, write('Tarrot pull out its regen card !     Tarrot hp + 1'),nl,nl,enemy(Type,Name,Hp), Newhp is Hp + 1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	enemyattack('Crying Onion',X) :- X > 60, write('Crying Onion makes you sad!     Player hp - 1 from sadness'),nl,nl,deducthp.
 	enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks!     Player hp - 2'),nl,nl,deducthp,deducthp.
 	enemyattack('Spaghetti Regretti',_) :- round(X) ,X \= 4, write('Spaghetti Regretti attack!     Player hp - 1'),nl,nl,deducthp,retractall(round(_)), NewX is X + 1, assert(round(NewX)).
@@ -265,10 +265,10 @@
 	encounter(3,fire) :- fightfrench.
 	encounter(4,fire) :- fightpizza.
 
-	fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
-	fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
-	fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',4)),nl,nl,battlestatus,nl,battle.
-	fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
+	fightmeatball :- write('A wild meatball appears !'),nl,write('It does not look friendly at all'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
+	fighttarrot :- write('A wild tarrot appears !'),nl,write('He looks like he is ready to duel!!'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
+	fightonion :- write('A crying onion appears ?'),nl,write('It looks very sad.'),assert(enemy(neutral,'Crying Onion',4)),nl,nl,battlestatus,nl,battle.
+	fightsalad :- write('A Caesar Salad appears !'),nl,write('Oddly enough, it looks a lot like Caesar...'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
 	fighticecube :- write('A Ice Cube appears !'), assert(enemy(ice,'Ice Cube', 3)),nl,nl,battlestatus,nl,battle.
 	fightvanilla :- write('A Vanilla Shake appears !'),nl,write('It seems ready to have a dance off against you!'), assert(enemy(ice,'Vanilla Shake', 5)),nl,nl,battlestatus,nl,battle.
 	fightscope :- write('A Triple Scope is taking aim on you!'),assert(enemy(ice,'Triple Scope', 3)),nl,nl,battlestatus,nl,battle.
@@ -279,7 +279,7 @@
 	fightpizza :- write('A Pineapple pizza appears ! (EWWWWW)'), assert(enemy(fire,'Pineapple Pizza', 6)),nl,nl,battlestatus,nl,battle.
 	
 	%Boss
-	bossfight(neutral) :- write('As you keep venturing forward into the garden,'),write('You see an area full of vines covering the ground.'),get_single_char(_),write('Suddenly, Spaghetti Regretti appears !'),nl,write('It looks at you menacingly!'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
+	bossfight(neutral) :- write('As you keep venturing forward into the garden,'),write('You see an area full of vines covering the ground.'),get_single_char(_),nl,write('Suddenly, Spaghetti Regretti appears !'),nl,write('It looks at you menacingly!'), assert(round(1)), assert(enemy(boss,'Spaghetti Regretti',12)),nl,nl,battlestatus,nl,battle.
 	bossfight(ice) :- write('You encounter a huge refridgerator in the middle of nowhere.'),write(' You decided to explore the inside of this large container.'),get_single_char(_),nl,write('As you walked into the refridgerator, you feel cold air around you...'),write(' You look up and you see a Frozen Tuna staring back at you!'),get_single_char(_),write('Frozen Tuna appears!'),nl,write('Frozen stares at you with a hostile sense!'), assert(round(1)),assert(enemy(boss,'Frozen Tuna', 20)),nl,nl,battlestatus,nl,battle.
 	bossfight(fire) :- write('You hear loud snoring sounds from far away, knowing that it might be the one last ingredient that you are finding,'),get_single_char(_),write(' you move quietly in the shadows to approach the source of the sound.'),nl,write('A giant bun is just sleeping there appearantly.'),write('You tried to get a sneak attack but you stepped on a twig and thus...'),nl,write('Dai Bao awakens! (Use this link for music -> https://www.youtube.com/watch?v=XUhVCoTsBaM)'),nl,write('It shapes just like a volcano... That looks dangerous!'), assert(enemy(boss,'Dai Bao', 15)),nl,nl,battlestatus,nl,battle.
 
