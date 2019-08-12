@@ -412,3 +412,4 @@
 	give('Frying Pan') :- retract(weapon(_)), assert(weapon('Frying Pan')).
 	give('Metal Spatula') :- retract(weapon(_)), assert(weapon('Metal Spatula')).
 	give('Ice Cream Scoop') :- retract(weapon(_)), assert(weapon('Ice Cream Scoop')).
+	give('Chopstick') :- retract(weapon(_)), assert(weapon('Chopstick)).
