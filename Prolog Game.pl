@@ -159,7 +159,7 @@
 	deducthp :- hp(rotten), retractall(hp(_)), assert(hp(die)).
 	deducthp :- hp(die),!.
 
-	battlestatus :- hp(X), write('Player Hp : '),write(X),nl,
+	battlestatus :- hp(X), write('Player Hp : '),write(X),(burn(yes),write('     Player Status : Burn');playerstun(yes),write('     Player Status : Freeze');!),nl,
 			enemy(_,Name,Hp), write(Name), write(' Hp : '),write(Hp),nl.
 
 	%item
@@ -292,23 +292,23 @@
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
 	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
-	action(a) :- burn(yes), write('You took one burn damage'),nl,nl,deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
+	action(a) :- burn(yes),nl, write('You took one burn damage'),nl,deducthp,\+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- hp(die),!.
-	action(a) :- enemy(_,_,Hp), Hp =< 0,!.
-	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
-	action(a) :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
-	action(a) :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).
-	action(t) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(t) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
 	action(t) :- use(potion), nl,chooseaction,read(X),action(X).
-	action(p) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(p) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
 	action(p) :- use(pepper), nl,chooseaction,read(X),action(X).
 	action(b) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
 	action(b) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, chooseaction,read(X),action(X).
-	action(b) :- enemy(_,_,Hp), Hp =< 0,!.
+	action(b) :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	enemyround :- sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-	enemyround :- !.	
+	enemyround :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
+	enemyround :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
+	enemyround :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).
+	
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
 	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),retractall(round(_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
