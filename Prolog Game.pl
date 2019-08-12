@@ -1,7 +1,7 @@
 	menu :- poster,nl,nl,write('Type anything to continue.....'),get_single_char(_),nl,nl,start.
 	
 	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),retractall(burn(_)),retractall(stage(_)),retractall(round(_)),
-		 assert(hp(healthy)),assert(weapon('Ice Cream Scoop')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
+		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
 		 assert(item(potion,10)),
 		 assert(item(blowtorch,3)),
 		 assert(item(pepper,3)),
@@ -47,17 +47,17 @@
 	write('    #    #    # #    # #    # #    #  ####     #       ####  #    #    #      ###### #    #   #   # #    #  ####  '),nl.
 
 	%NPC
-	interact(1) :- 	npc('Helpful David',no), write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
+	interact(1) :- 	npc('Helpful David',no), get_single_char(_),nl,write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
 			retract(npc('Helpful David',_)),assert(npc('Helpful David',yes)),nl,nl,location(int).
-	interact(1) :- 	npc('Helpful David',yes), random(1,11,X), advice(X),nl,nl,location(int).
-	interact(2) :- 	npc('Edythe The Kind',no),write('Hello young man.'),get_single_char(_),nl,write('I am just an old granny that is enjoying her old life.'),get_single_char(_),nl,
+	interact(1) :- 	npc('Helpful David',yes), nl,random(1,11,X), advice(X),nl,nl,location(int).
+	interact(2) :- 	npc('Edythe The Kind',no),get_single_char(_),nl,write('Hello young man.'),get_single_char(_),nl,write('I am just an old granny that is enjoying her old life.'),get_single_char(_),nl,
 			write('Clemen says "She looks kind and very trustworthy, maybe I can ask for some help from her."'),get_single_char(_),nl,retract(npc('Edythe The Kind',_)),assert(npc('Edythe The Kind',yes)),nl,location(int).
-	interact(2) :- 	npc('Edythe The Kind',yes),write('Clemen says "Dear Miss Edythe, can I ask for some help from you as I am having some trouble".'),get_single_char(_),write('Sure do dear, but what do you need?'),
-			nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,retract(npc('Edythe The Kind',_)), assert(npc('Edythe The Kind',help)),location(int).
-	interact(2) :- npc('Edythe The Kind',help),write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
-	interact(3) :- npc('Trader Terry', no),write('Welcome to my shop!! Are you here to buy my wares?'),nl,write('What do you mean you have no money?? I can see it right there!'),nl,
+	interact(2) :- 	npc('Edythe The Kind',yes),get_single_char(_),nl,write('Clemen says "Dear Miss Edythe, can I ask for some help from you as I am having some trouble".'),get_single_char(_),write('Sure do dear, but what do you need?'),
+			nl,write('1. Tomato Juice x3'),nl,write('2. Pepper x2'),nl,write('3. Blowtorch x1'),nl,read(X),additem(X),nl,nl,write('Good luck on your adventure sonny.'),nl,nl,retract(npc('Edythe The Kind',_)), assert(npc('Edythe The Kind',help)),location(int).
+	interact(2) :- npc('Edythe The Kind',help),nl,write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
+	interact(3) :- nl,npc('Trader Terry', no),write('Welcome to my shop!! Are you here to buy my wares?'),nl,write('What do you mean you have no money?? I can see it right there!'),nl,
 		       write('Player Score: '), playerScore(S), write(S),nl,write('Yes!! That right there I need that!'), retract(npc('Trader Terry',_)), assert(npc('Trader Terry',yes)),nl,nl,location(int).
-	interact(3) :- npc('Trader Terry', yes), write('1. Tomato juice - 50 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Metal Spatula'),nl,write('5. Exit shop'),nl,playerScore(S), write('Currency: '),write(S),nl,
+	interact(3) :- nl,npc('Trader Terry', yes), write('1. Tomato juice - 50 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Metal Spatula - 500 Score'),nl,write('5. Exit shop'),nl,playerScore(S),nl,write('Currency: '),write(S),nl,nl,
 		       write('Your Choice: '),read(X), buy(X).
 	interact(_) :- townhall.
 	
@@ -100,7 +100,7 @@
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
 
-	ending :- write('You defeated all three areas!! Congratulations!!'),nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost,nl,end.
+	ending :- write('You defeated all three areas!! Congratulations!!'),nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost.
 	ending1(yes) :- fakeending.
 	ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
 	ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
@@ -146,10 +146,10 @@
 	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%Ice faction
-	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),write('Section 2-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),fight(50).
+	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),nl,write('Section 2-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),fight(50).
 
 	%Fire faction
-	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),write('Section 3-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),fight(50).
+	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),nl,write('Section 3-1: Event 1'),nl,nl,random(1,101,X),event(X),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),fight(50).
 
 	%HP
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
@@ -292,7 +292,7 @@
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
 	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-	action(a) :- burn(yes), write('You took one burn damage'),deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- burn(yes), write('You took one burn damage'),nl,nl,deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 	action(a) :- hp(die),!.
 	action(a) :- enemy(_,_,Hp), Hp =< 0,!.
 	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
@@ -383,7 +383,7 @@
 	event(X) :- get_single_char(_),X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),get_single_char(_),nl,random(1,4,R),snatch(R),get_single_char(_).
 	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
 	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
-	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Can Openner!'),nl.
+	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl.
 	event(_) :- write('You continued your journey without any interesting events happening...'),nl.
 
 	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp.
