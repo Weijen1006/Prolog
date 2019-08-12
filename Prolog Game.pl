@@ -291,8 +291,8 @@
 			write('Your Choice : ').
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
-	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-	action(a) :- burn(yes), write('You took one burn damage'),nl,nl,deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
+	action(a) :- burn(yes), write('You took one burn damage'),nl,nl,deducthp,retract(burn(_)),assert(burn(no)), \+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- hp(die),!.
 	action(a) :- enemy(_,_,Hp), Hp =< 0,!.
 	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
@@ -306,6 +306,9 @@
 	action(b) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, chooseaction,read(X),action(X).
 	action(b) :- enemy(_,_,Hp), Hp =< 0,!.
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
+
+	enemyround :- sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	enemyround :- !.	
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
 	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),retractall(round(_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
