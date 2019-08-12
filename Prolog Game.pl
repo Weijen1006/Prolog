@@ -380,7 +380,7 @@
 
 	%Event
 	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl,scorestatus,nl,nl.
-	event(X) :- get_single_char(_),X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),get_single_char(_),nl,random(1,4,R),snatch(R),nl,scorestatus,nl,nl,get_single_char(_).
+	event(X) :- get_single_char(_),X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R),nl,scorestatus,nl,nl,get_single_char(_).
 	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
 	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
 	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl.
