@@ -308,8 +308,8 @@
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,write('You have recovered all your hp!'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,get_single_char(_),townhall.
-	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,write('You have recovered all your hp!'),nl,nl,score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,get_single_char(_),townhall.
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
+	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,get_single_char(_),townhall.
 	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battle.
 	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao',5)), retract(stage(3)), assert(stage(3)),battle.
 	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,score(boss),retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)),ending.
@@ -379,8 +379,8 @@
 		       playerScore(Y), write('Player Score : '), write(Y),nl.
 
 	%Event
-	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl.
-	event(X) :- get_single_char(_),X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),get_single_char(_),nl,random(1,4,R),snatch(R),get_single_char(_).
+	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl,scorestatus,nl,nl.
+	event(X) :- get_single_char(_),X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),get_single_char(_),nl,random(1,4,R),snatch(R),nl,scorestatus,nl,nl,get_single_char(_).
 	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
 	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
 	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl.
