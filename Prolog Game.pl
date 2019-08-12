@@ -1,27 +1,26 @@
-	menu :- poster,nl,nl,write('Type anything to continue.....'),get_single_char(_),nl,nl,start.
+	start :- poster,nl,nl,write('Type anything to continue.....'),get_single_char(_),nl,menu.
 	
-	start :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),retractall(burn(_)),retractall(stage(_)),retractall(round(_)),
-		 assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
-		 assert(item(potion,10)),
-		 assert(item(blowtorch,3)),
-		 assert(item(pepper,3)),
-		 assert(item(mt,no)),
-		 assert(item(co,no)),
-		 assert(item(corkscrew,no)),
-		 assert(down(1)),
-		 assert(sneeze(no)),
-		 assert(stun(no)),
-		 assert(playerScore(0)),
-		 assert(achievement(nothing)),
-		 assert(playerstun(no)),
-		 assert(playerloc(town)),
-		 assert(complete(nothing)),
-		 assert(burn(no)),
-		 assert(stage(1)),
-		 write('Starting of the story:'),get_single_char(_),nl,story,nl,townhall.
+	menu :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),retractall(burn(_)),retractall(stage(_)),retractall(round(_)),
+		assert(hp(healthy)),assert(weapon('Wooden Spatula')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
+		assert(item(potion,10)),
+		assert(item(blowtorch,3)),
+		assert(item(pepper,3)),
+		assert(item(mt,no)),
+		assert(item(co,no)),
+		assert(item(corkscrew,no)),
+	 	assert(down(1)),
+		assert(sneeze(no)),
+		assert(stun(no)),
+		assert(playerScore(0)),
+		assert(achievement(nothing)),
+		assert(playerstun(no)),
+		assert(playerloc(town)),
+		assert(complete(nothing)),
+		assert(burn(no)),
+		assert(stage(1)),
+		nl,achievestart,retract(achievement(nothing)),story,nl,townhall.
 
-	story :- achievestart,retract(achievement(nothing)),
-		 write('This story follows the adventure of Clemen Wohlfahrt, an amazing chef from the land of Redfields.'), get_single_char(_),nl,
+	story :- write('This story follows the adventure of Clemen Wohlfahrt, an amazing chef from the land of Redfields.'), get_single_char(_),nl,
 		 write('He was born with only one hand due to an accident at birth causing him a big disability in life and so on,but that did not stop him from achieving his dream at all.'), get_single_char(_),nl,
 		 write('And there he goes, on his way to open a new restaurant in a place called Calamity Town...'),get_single_char(_),nl,
 		 write('Breath in and breath out Clemen, you got this long journey ahead of you, said Clemen'),get_single_char(_),nl,
@@ -35,7 +34,7 @@
 	write('    #    #    #  ####    #     #      #     # #    # #    # #####  # #  #   #   #    # #    # #####     #    # #####     #       #      #####  # ## # #####  # #  # '),nl,
 	write('    #    ######      #   #     #      ####### #    # #    # #      #  # #   #   #    # #####  #         #    # #         #       #      #      #    # #      #  # # '),nl,
 	write('    #    #    # #    #   #     #      #     # #    #  #  #  #      #   ##   #   #    # #   #  #         #    # #         #     # #      #      #    # #      #   ## '),nl,
-	write('    #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # '),get_single_char(_).
+	write('    #    #    #  ####    #     #      #     # #####    ##   ###### #    #   #    ####  #    # ######     ####  #          #####  ###### ###### #    # ###### #    # ').
 	
 	endingpost :-
         write(' #######                                                                                                          '),nl,
@@ -57,14 +56,14 @@
 	interact(2) :- npc('Edythe The Kind',help),nl,write('Dear, I already helped you. Good luck on your adventure.'),nl,nl,location(int).
 	interact(3) :- nl,npc('Trader Terry', no),write('Welcome to my shop!! Are you here to buy my wares?'),nl,write('What do you mean you have no money?? I can see it right there!'),nl,
 		       write('Player Score: '), playerScore(S), write(S),nl,write('Yes!! That right there I need that!'), retract(npc('Trader Terry',_)), assert(npc('Trader Terry',yes)),nl,nl,location(int).
-	interact(3) :- nl,npc('Trader Terry', yes), write('1. Tomato juice - 50 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Metal Spatula - 500 Score'),nl,write('5. Exit shop'),nl,playerScore(S),nl,write('Currency: '),write(S),nl,nl,
+	interact(3) :- npc('Trader Terry', yes), write('Your Inventory :'),nl,itemList,nl,write('1. Tomato juice - 50 Score'),nl,write('2. Pepper - 150 Score'),nl,write('3. Blowtorch - 300 Score'),nl,write('4. Metal Spatula - 500 Score'),nl,write('5. Exit shop'),nl,playerScore(S),nl,write('Currency: '),write(S),nl,nl,
 		       write('Your Choice: '),read(X), buy(X).
 	interact(_) :- townhall.
 	
 	buy(1) :- playerScore(S), S >= 50, NewS is S - 50, retract(playerScore(_)), assert(playerScore(NewS)), item(potion,X), NewX is X + 1, retract(item(potion,_)),assert(item(potion,NewX)), write('You received one potion! Now you have '),write(NewX),write(' potions!'),nl,interact(3).
 	buy(2) :- playerScore(S), S >= 150, NewS is S - 150, retract(playerScore(_)), assert(playerScore(NewS)),item(pepper,X), NewX is X + 1, retract(item(pepper,_)),assert(item(pepper,NewX)), write('You received one pepper! Now you have '),write(NewX),write(' peppers!'),nl,interact(3).
 	buy(3) :- playerScore(S), S >= 300, NewS is S - 300, retract(playerScore(_)), assert(playerScore(NewS)),item(blowtorch,X), NewX is X + 1, retract(item(blowtorch,_)),assert(item(blowtorch,NewX)), write('You received one blowtorch! Now you have '),write(NewX),write(' blowtorch!'),nl,interact(3).
-	buy(4) :- playerScore(S), S >= 500, NewS is S - 500, retract(playerScore(_)), assert(playerScore(NewS)),retractall(weapon(_)),assert(weapon('Metal Spatula')), write('You received a new weapon! '),nl,interact(3).
+	buy(4) :- playerScore(S), S >= 500, NewS is S - 500, retract(playerScore(_)), assert(playerScore(NewS)),changeweapon(yes,'Metal Spatula'),interact(3).
 	buy(5) :- write('Pleasure doing business with you!!'),nl,nl, location(int). 
 	buy(_) :- write('Not enought currency for this!!'),nl,interact(3). 
 	
@@ -90,17 +89,17 @@
 			  write('Your choice : ').
 
 	location(int) :- write('1. Helpful David'),nl,write('2. Edythe The Kind'),nl,write('3. Trader Terry'),nl,write('Type anything else to go back to menu'),nl,write('Please choose the options above by numbering: '),read(X),interact(X).
-	location(up) :- complete(neutral), write('You have completed Violet Garden, choose another place!'),nl,nl,chooselocation,read(X),location(X).
+	location(up) :- complete(neutral), write('You have completed Violet Garden, choose another place!'),nl,nl,chooselocation,read(X),nl,location(X).
 	location(up) :- write('You choose Violet Garden, Good Luck'),nl,neutral.
-	location(left) :- complete(ice), write('You have completed Icy Riverside, choose another place!'),nl,nl,chooselocation,read(X),location(X).
+	location(left) :- complete(ice), write('You have completed Icy Riverside, choose another place!'),nl,nl,chooselocation,read(X),nl,location(X).
 	location(left) :- write('You choose Icy Riverside, Good Luck'),nl,ice.
-	location(right) :- complete(neutral),complete(ice),write('You choose fire faction, Good Luck'),nl,fire.
-	location(right) :- write('You need to complete both Violet Garden and Icy Riverside to enter Fiery Hill'),nl,nl,chooselocation,read(X),location(X).
-	location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,retractall(down(_)),assert(down(2)),chooselocation,read(X),location(X).
+	location(right) :- complete(neutral),complete(ice),write('You choose Fiery Hill, Good Luck'),nl,fire.
+	location(right) :- write('You need to complete both Violet Garden and Icy Riverside to enter Fiery Hill'),nl,nl,chooselocation,read(X),nl,location(X).
+	location(down) :- down(1),write('I see what you try to do there, but there is no going back'),nl,nl,retractall(down(_)),assert(down(2)),chooselocation,read(X),nl,location(X).
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
 
-	ending :- nl,write('You defeated all three areas!! Congratulations!!'),nl,achieveend,nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost,nl,nl,end.
+	ending :- nl,write('You completed all three areas!! Congratulations!!'),nl,achieveend,nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost,nl,nl,end.
 	ending1(yes) :- fakeending.
 	ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
 	ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
@@ -121,18 +120,18 @@
 	end :- achievement.
 
 	%Mini Game
-	minigame(ice) :- get_single_char(_),write('As you enter the Icy Riverside, you see a mystery man in black cloak and he noticed you'),get_single_char(_),nl,
+	minigame(ice) :- get_single_char(_),nl,write('As you enter the Icy Riverside, you see a mystery man in black cloak and he noticed you'),get_single_char(_),nl,
 			 write('Hello young man, do you want to play a game with me? the reward is something very helpful in this area (evil smile)'),nl,
 			 write('Your choice (yes/no) : '), read(X),playgame(X).
-	minigame(fire) :- get_single_char(_),write('As you enter the Fiery Hill, you see the mystery man in black cloak again'),get_single_char(_),nl,
+	minigame(fire) :- get_single_char(_),nl,write('As you enter the Fiery Hill, you see the mystery man in black cloak again'),get_single_char(_),nl,
 			 write('Hello young man, here we meet again, do you want to play a game with me? the reward is something very helpful in this area (evil smile)'),nl,
 			 write('Your choice (yes/no) : '), read(X),playgame(X).
 
-	playgame(yes) :- nl,write('I see, you are a man of culture as well, let us begin!'),nl,
+	playgame(yes) :- nl,achievegame,write('I see, you are a man of culture as well, let us begin!'),nl,
 			 write('There are 4 fortune cookies here, pick one and test your fortune !'),nl,
 			 write('Your Choice  (1-4) : '),read(X),random(1,5,Y), fortune(X,Y).
-	playgame(no) :- get_single_char(_),nl, write('Ohh... too bad then, we shall meet again next time'),nl, get_single_char(_),
-			write('The mystery man disappear !'),nl,get_single_char(_).
+	playgame(no) :- nl, write('Ohh... too bad then, we shall meet again next time'),nl, get_single_char(_),
+			write('The mystery man disappear !'),nl.
 	playgame(_) :- nl,write('Mystery Man : I dont understand you, please tell me your choice again'),nl,
 		       write('Your choice (yes/no) : '), read(X),playgame(X).
 	
@@ -140,7 +139,7 @@
 			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Ice Cream Scoop').
 	fortune(X,Y) :- playerloc(fire), X == Y, nl,write('You just got the fortune cookie correcty, its a pair of Chopsticks in there!!!'),nl, 
 			weapon(Weapon),write('Do you want to pick up and replace your '),write(Weapon),write('?'),nl,write('Your choice (yes/no) : '),read(Z),changeweapon(Z,'Chopstick').
-	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp,scorestatus,nl,nl.
+	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp,scorestatus.
 	
 	%Neutral faction
 	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
@@ -152,6 +151,7 @@
 	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),nl,write('Section 3-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%HP
+	deducthp :- hp(infinity),!.
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
 	deducthp :- hp(fresh), retractall(hp(_)), assert(hp(raw)).
 	deducthp :- hp(raw), retractall(hp(_)),assert(hp(spoil)).
@@ -172,12 +172,12 @@
 		       write('1 pepper used, '),write(NewX),write(' pepper left'),nl,write('Looks like '),write(Name),write(' is about to sneeze !'),nl.
 	use(blowtorch) :- item(blowtorch,0),nl, write('You have no blowtorch left'),nl.
 	use(blowtorch) :- enemy(ice,_,_),item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
-			  enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
-			  write('You used blowtorch on the enemy, 3 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
+			  enemy(Type,Name,Hp), Newhp is Hp - Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
+			  write('You used blowtorch on the enemy, it melted !'),nl,write(NewX),write(' blowtorch left'),nl.
 	use(blowtorch) :- enemy(boss,'Frozen Tuna',_),item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
 			  enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
-			  write('You used blowtorch on the enemy, 3 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
-	use(blowtorch) :- item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
+			  write('You used blowtorch on the enemy, Super Effective ! 3 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
+	use(blowtorch) :- \+enemy(boss,'Frozen Tuna',_),\+enemy(ice,_,_),item(blowtorch,X), X > 0, NewX is X - 1, retractall(item(blowtorch,_)), assert(item(blowtorch,NewX)),
 			  enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),nl,
 			  write('You used blowtorch on the enemy, 2 damage dealt !'),nl,write(NewX),write(' blowtorch left'),nl.
 
@@ -233,16 +233,17 @@
 	metalspatula(X) :- X =< 25,nl, write('Your attack missed!'),nl.
 	metalspatula(X) :- X > 25,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	icecreamscoop(X) :- X > 25, enemy(ice,_,_),nl,write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	icecreamscoop(X) :- X > 25, enemy(boss,'Frozen Tuna',_), nl, write('Its super effective! 2 damage dealt'), nl, enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	icecreamscoop(X) :- \+enemy(ice,_,_),metalspatula(X).
 	chopstick(X) :- X > 25, enemy(fire,_,_), nl, write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	chopstick(X) :- X > 25, enemy(boss,'Dai Bao',_), nl, write('Its super effective! 3 damage dealt'), nl, enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	chopstick(X) :- \+enemy(fire,_,_),metalspatula(X).
 	fryingpan(boss,X) :- X =< 30,nl,write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),retract(stun(_)),assert(stun(yes)),write('You have stunned the enemy'),nl.
 	fryingpan(boss,X) :- X > 30,nl, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
-	fryingpan(X,_) :- X \= boss, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	fryingpan(X,_) :- X \= boss, write('Its a direct hit! ONE HIT KO !!!'),nl, enemy(Type,Name,Hp), Newhp is Hp-Hp, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 
-	changeweapon(yes,X) :- nl,write('You are now holding '),write(X),give(X).
-	changeweapon(no,X) :- nl,write('You ignore the '),write(X).
+	changeweapon(yes,X) :- nl,write('You are now holding '),write(X),give(X),nl.
+	changeweapon(no,X) :- nl,write('You ignore the '),write(X),nl.
 	changeweapon(_,X) :- nl,write('Invalid Input, Please try again'),nl,write('Your choice (yes/no) : '),read(Y),changeweapon(Y,X),nl.
 
 	%Battle
@@ -290,7 +291,7 @@
 			write('p - use pepper'),nl,
 			write('Your Choice : ').
 
-	action(i) :- itemList,nl,chooseaction,read(X),action(X).
+	action(i) :- nl,itemList,nl,chooseaction,read(X),action(X).
 	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- burn(yes),nl, write('You took one burn damage'),nl,deducthp,\+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- hp(die),!.
@@ -305,10 +306,10 @@
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retract(hp(_)),retractall(round(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
-	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),retract(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,get_single_char(_),townhall.
-	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battlestatus,nl,nl,battle.
-	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao',5)), retract(stage(_)), assert(stage(3)),battlestatus,nl,nl,battle.
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),(\+hp(infinity),retract(hp(_)),assert(hp(healthy));!),retractall(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
+	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),(\+hp(infinity),retract(hp(_)),assert(hp(healthy));!),retract(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),(\+complete(neutral),achievehard;!),get_single_char(_),townhall.
+	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battlestatus,nl,battle.
+	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao',5)), retract(stage(_)), assert(stage(3)),battlestatus,nl,battle.
 	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,score(boss),retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)),ending.
 	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(round(_)),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
 	
@@ -347,7 +348,7 @@
 	open(X,_) :- write('Invalid Input, Please try again'),nl,write('Your choice (yes/no) : '),read(Y),nl,open(X,Y).	
 
 	%Utility
-	itemList :- nl,weapon(X), write('Weapon : '),write(X),nl,
+	itemList :- weapon(X), write('Weapon : '),write(X),nl,
 		    (item(potion,Y),Y > 0, write('Tomato juice   x '),write(Y),nl;!),
 		    (item(blowtorch,Z),Z > 0, write('Blowtorch   x '),write(Z),nl;!),
 		    (item(pepper,A),A > 0, write('Pepper   x '),write(A),nl;!),
@@ -359,13 +360,14 @@
 	loot(X) :- X > 1, X =< 60, write('You have obtained 1 tomato juice!'), item(potion,Y), NewY is Y + 1, retractall(item(potion,_)), assert(item(potion,NewY)).
 	loot(X) :- X >60, X =< 75, write('You have obtained 1 blowtorch!'), item(blowtorch,Y), NewY is Y + 1, retractall(item(blowtorch,_)),assert(item(blowtorch,NewY)).
 	loot(X) :- X >75, X =< 95,write('You have obtained 1 pepper!'), item(pepper,Y), NewY is Y + 1, retractall(item(pepper,_)), assert(item(pepper,NewY)).
+	loot(_) :- !.
 
 	advice(1) :- write('Did you know? Tomato juice heals your hp full!').
 	advice(2) :- write('Edythe will sometimes provide you supplies! You should pay a visit to the old lady often.').
 	advice(3) :- write('There are three areas you can explore to gather ingredients which is Violent Garden, Fiery Hill and Icy River!'),nl,write('The other areas are restricted due to its dangerous surroundings for now..').
 	advice(4) :- write('Did you know if your HP drops to "die", you actually die?'),achieveuseless.
 	advice(5) :- get_single_char(_),write('You have 5 states of HP, make sure to keep track of your HP or else you might lose!'),get_single_char(_),write('..... Oh wait, I mean die not lose. This is not a game after all').
-	advice(6) :- write('You gain score everytime you defeat an enemy and extra for bosses, but everytime you heal you lose points! (There is an achievement for this teehee)').
+	advice(6) :- write('If you are new here, I suggest you to start with Violet Garden! (There is an achievement for this teehee)').
 	advice(7) :- write('Use pepper to avoid getting hit for one round!').
 	advice(8) :- write('You have limited resources! Make sure to make full use for them!').
 	advice(9) :- write('You should visit Trader Terry for more supplies!').
@@ -373,10 +375,10 @@
 	advice(11) :- write('Each bosses have their unique abilities, watch out for their abilities!').
 	advice(12) :- write('Legend says only a few are worthy of wielding the legendary weapon, will it be you?').
 
-	score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
-	score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
-	score(fire) :- playerScore(S), X is 200, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 200 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
-	score(boss) :- playerScore(S), X is 500, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 500 score!!'),nl,nl,(Total >= 2000, achievescore,nl,nl;!),scorestatus.
+	score(neutral) :- playerScore(S), X is 100, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 100 score!!'),nl,nl,(Total >= 2000, achievescore;!),scorestatus.
+	score(ice) :- playerScore(S), X is 150, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 150 score!!'),nl,nl,(Total >= 2000, achievescore;!),scorestatus.
+	score(fire) :- playerScore(S), X is 200, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 200 score!!'),nl,nl,(Total >= 2000, achievescore;!),scorestatus.
+	score(boss) :- playerScore(S), X is 500, Total is S + X, retract(playerScore(_)), assert(playerScore(Total)),write('You received 500 score!!'),nl,nl,(Total >= 2000, achievescore;!),scorestatus.
 	scorestatus :- hp(X), write('Player Hp : '),write(X),nl,
 		       playerScore(Y), write('Player Score : '), write(Y),nl.
 
@@ -392,7 +394,7 @@
 	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
 	crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
 	crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
-	crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your Choice : '), read(X), crossroad(X,Y).	
+	crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your choice (left/right) : '), read(X), crossroad(X,Y).	
 
 	snatch(X) :- item(potion,Y), Y >= X, write('Tomato Juice - '), write(X), NewY is Y - X, retractall(item(potion,_)), assert(item(potion,NewY)), write('     '),write(NewY),write(' Tomato Juice left'),nl.
 	snatch(X) :- item(potion,Y), Y < X, random(1,X,R), snatch(R).
@@ -400,20 +402,44 @@
 	%Achievement
 	achievestart :- \+achievement('You did it!!'), assert(achievement('You did it!!')),write('You unlocked an achievement : You did it!!'),nl,nl;!.
 	achievedown :- \+achievement('Not ready for adventure...'), assert(achievement('Not ready for adventure...')),write('You unlocked an achievement : Not ready for adventure...'),nl,nl;!.
-	achieveuseless :- \+achievement('Not so useful now!!'), assert(achievement('Not so useful now!!')),nl, write('You unlocked an achievement : Not so useful now!!');!.
+	achieveuseless :- \+achievement('Its big brain time...'), assert(achievement('Its big brain time...')),nl, write('You unlocked an achievement : Its big brain time...');!.
 	achievelazywriting :- \+achievement('Lazy writing'), assert(achievement('Lazy writing')),nl, write('You unlocked an achievement : Lazy writing');!.
-	achievescore :- \+achievement('Score for the sky!!'), assert(achievement('Score for the sky!!')), nl, write('You unlocked an achievement : Score for the sky!!');!.
-	achieverng :- \+achievement('RNGesus'), assert(achievement('RNGesus')),nl,write('You unlocked an achievement : RNGesus'),nl,nl;!.
+	achievescore :- \+achievement('Score for the sky!!'), assert(achievement('Score for the sky!!')), write('You unlocked an achievement : Score for the sky!!'),nl,nl;!.
+	achieverng :- \+achievement('RNGesus'), assert(achievement('RNGesus')),write('You unlocked an achievement : RNGesus'),nl,nl;!.
 	achievenohelp :- \+achievement('I dont need help!'),assert(achievement('I dont need help!')),nl,write('You unlocked an achievement : I dont need help!'),nl;!.
+	achievehard :- \+achievement('Going for the hard way...'),assert(achievement('Going for the hard way...')),nl,write('You unlocked an achievement : Going for the hard way...'),nl;!.
+	achievegame :- \+achievement('Would you like to play a game?'),assert(achievement('Would you like to play a game?')),write('You unlocked an achievement : Would you like to play a game?'),nl,nl;!.
 	achieveend :- \+achievement('Thanks for playing'),assert(achievement('Thanks for playing')),nl,write('You unlocked an achievement : Thanks for playing'),nl;!.
+	achievecheat :- \+achievement('Hacker Man!'),assert(achievement('Hacker Man!')),write('You unlocked an achievement : Hacker Man!'),nl,nl;!.
 
 	achievement :- findall(X,achievement(X),List), nl,write('Achievements obtained :'),nl,printachieve(List).
 
 	printachieve([]).
 	printachieve([H|T]) :- write(H),nl,printachieve(T).
 
-	%For test purpose
+	%Switch weapon
 	give('Frying Pan') :- retract(weapon(_)), assert(weapon('Frying Pan')).
 	give('Metal Spatula') :- retract(weapon(_)), assert(weapon('Metal Spatula')).
 	give('Ice Cream Scoop') :- retract(weapon(_)), assert(weapon('Ice Cream Scoop')).
 	give('Chopstick') :- retract(weapon(_)), assert(weapon('Chopstick')).
+
+	%Cheat mode
+	cheat :- retractall(item(_,_)),retractall(weapon(_)),retractall(playerScore(_)),retractall(hp(_)),retractall(sneeze(_)),retractall(down(_)), retractall(stun(_)),retractall(npc(_,_)),retractall(playerstun(_)),retractall(playerloc(_)),retractall(complete(_)),retractall(burn(_)),retractall(stage(_)),retractall(round(_)),
+		 assert(hp(infinity)),assert(weapon('Frying Pan')),assert(npc('Helpful David', no)),assert(npc('Edythe The Kind',no)),assert(npc('Trader Terry',no)),
+		 assert(item(potion,999)),
+		 assert(item(blowtorch,999)),
+		 assert(item(pepper,999)),
+		 assert(item(mt,yes)),
+		 assert(item(co,yes)),
+		 assert(item(corkscrew,yes)),
+	 	 assert(down(1)),
+		 assert(sneeze(no)),
+		 assert(stun(no)),
+		 assert(playerScore(9999)),
+		 assert(achievement(nothing)),
+		 assert(playerstun(no)),
+		 assert(playerloc(town)),
+		 assert(complete(nothing)),
+		 assert(burn(no)),
+		 assert(stage(1)),
+		 nl,achievecheat,retract(achievement(nothing)),story,nl,townhall.
