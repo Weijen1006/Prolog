@@ -130,7 +130,7 @@
 	playgame(yes) :- nl,achievegame,write('I see, you are a man of culture as well, let us begin!'),nl,
 			 write('There are 4 fortune cookies here, pick one and test your fortune !'),nl,
 			 write('Your Choice  (1-4) : '),read(X),random(1,5,Y), fortune(X,Y).
-	playgame(no) :- nl, write('Ohh... too bad then, we shall meet again next time'),nl, get_single_char(_),
+	playgame(no) :- nl, write('Ohh... too bad then, we shall meet again next time'),nl,
 			write('The mystery man disappear !'),nl.
 	playgame(_) :- nl,write('Mystery Man : I dont understand you, please tell me your choice again'),nl,
 		       write('Your choice (yes/no) : '), read(X),playgame(X).
@@ -209,9 +209,9 @@
 	enemyattack('Frozen Tuna', _) :- round(Y), NewY is Y + 1, retract(round(_)), assert(round(NewY)), write('Frozen Tuna is getting ready to attack!'),nl.
 	
 	%Fire Area
-	enemyattack('Pomegrenade',_) :- round(Y), Y = 4, write('Pomegrenade exploded and killed you!'),retract(hp(_)),assert(hp(die)).
-	enemyattack('Pomegrenade',_) :- round(Y), Y = 3, write('Pomegrenade is going explode next round!').
-	enemyattack('Pomegrenade',_) :- round(Y), NewY is Y + 1, write('Pomegrenade is getting ready to explode!'), retract(round(_)),assert(round(NewY)).
+	enemyattack('Pomegrenade',_) :- round(4), write('Pomegrenade exploded and killed you!'),nl,nl,retract(hp(_)),assert(hp(die)).
+	enemyattack('Pomegrenade',_) :- round(3), write('Pomegrenade is going explode next round!'),nl,nl.
+	enemyattack('Pomegrenade',_) :- round(Y), NewY is Y + 1, write('Pomegrenade is getting ready to explode!'),nl,nl, retract(round(_)),assert(round(NewY)).
 	enemyattack('Stupendous Soup', X) :- X > 80, X =< 100, write('Stupendous Soup spills hot soup at you!'),nl,write('It tastes impressive but it is too hot and it burned you!     Player hp - 1'),retract(burn(_)),assert(burn(yes)),nl,nl,deducthp.
 	enemyattack('Stupendous Soup', X) :- X > 49, X =< 80, write('Stupendous Soup hits you with his spoon!    Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Pineapple Pizza', X) :- X >= 80, X =< 100, write('Pineapple Pizza shoots hot melted cheese on you! '),nl,write('It burns your skin!     Player hp - 1'),nl,nl,retract(burn(_)),assert(burn(yes)),deducthp.
@@ -302,19 +302,19 @@
 	action(p) :- use(pepper), nl,chooseaction,read(X),action(X).
 	action(b) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemyround.
 	action(b) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, chooseaction,read(X),action(X).
-	action(b) :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
+	action(b) :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)).
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),(\+hp(infinity),retract(hp(_)),assert(hp(healthy));!),retractall(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
-	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),(\+hp(infinity),retract(hp(_)),assert(hp(healthy));!),retract(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),(\+complete(neutral),achievehard;!),get_single_char(_),townhall.
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,(\+hp(infinity),retract(hp(_)),assert(hp(healthy));!),retractall(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
+	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,(\+hp(infinity),retract(hp(_)),assert(hp(healthy));!),retract(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),(\+complete(neutral),achievehard;!),get_single_char(_),townhall.
 	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battlestatus,nl,battle.
 	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao',5)), retract(stage(_)), assert(stage(3)),battlestatus,nl,battle.
 	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,score(boss),retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)),ending.
-	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(round(_)),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
+	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(round(_)),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y).
 	
 	enemyround :- sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-	enemyround :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
+	enemyround :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)).
 	enemyround :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
 	enemyround :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).	
 
