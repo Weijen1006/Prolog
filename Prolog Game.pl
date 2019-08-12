@@ -273,7 +273,7 @@
 	fightvanilla :- write('A Vanilla Shake appears !'),nl,write('It seems ready to have a dance off against you!'), assert(enemy(ice,'Vanilla Shake', 5)),nl,nl,battlestatus,nl,battle.
 	fightscope :- write('A Triple Scope is taking aim on you!'),assert(enemy(ice,'Triple Scope', 3)),nl,nl,battlestatus,nl,battle.
 	fightbanana :- write('A Banana Skit appears !'),nl,write('Clemen thought to himself "That is a funny looking banana split."'),assert(enemy(ice,'Banana Skit', 5)),nl,nl,battlestatus,nl,battle.
-	fightpome :- write('A Pome...GRENADE appears !'),nl,write('It looks like it is going to explode!'), assert(enemy(fire,'Pomegrenade', 2)),nl,nl,battlestatus,nl,battle.
+	fightpome :- write('A Pome...GRENADE appears !'),nl,write('It looks like it is going to explode!'), assert(enemy(fire,'Pomegrenade', 3)),nl,nl,battlestatus,nl,battle.
 	fightsoup :- write('A Stupendous Soup appears !'),nl,write('Awwwww that is hot!!'), assert(enemy(fire,'Stupendous Soup', 5)),assert(round(1)),nl,nl,battlestatus,nl,battle.
 	fightfrench :- write(' A group of French Flies appears !'),nl, write('It is raining french flies!!'), assert(enemy(fire,'French Flies', 6)),nl,nl,battlestatus,nl,battle.
 	fightpizza :- write('A Pineapple pizza appears ! (EWWWWW)'), assert(enemy(fire,'Pineapple Pizza', 6)),nl,nl,battlestatus,nl,battle.
