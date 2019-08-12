@@ -49,7 +49,7 @@
 	%NPC
 	interact(1) :- 	npc('Helpful David',no), get_single_char(_),nl,write('Hello there traveler!!'), get_single_char(_),nl,write('My name is David, people around the town call me The Helpful One!'),get_single_char(_),nl,write('Talk me to if you need any advice!'),
 			retract(npc('Helpful David',_)),assert(npc('Helpful David',yes)),nl,nl,location(int).
-	interact(1) :- 	npc('Helpful David',yes), nl,random(1,11,X), advice(X),nl,nl,location(int).
+	interact(1) :- 	npc('Helpful David',yes), nl,random(1,13,X), advice(X),nl,nl,location(int).
 	interact(2) :- 	npc('Edythe The Kind',no),get_single_char(_),nl,write('Hello young man.'),get_single_char(_),nl,write('I am just an old granny that is enjoying her old life.'),get_single_char(_),nl,
 			write('Clemen says "She looks kind and very trustworthy, maybe I can ask for some help from her."'),get_single_char(_),nl,retract(npc('Edythe The Kind',_)),assert(npc('Edythe The Kind',yes)),nl,location(int).
 	interact(2) :- 	npc('Edythe The Kind',yes),get_single_char(_),nl,write('Clemen says "Dear Miss Edythe, can I ask for some help from you as I am having some trouble".'),get_single_char(_),write('Sure do dear, but what do you need?'),
@@ -65,7 +65,7 @@
 	buy(2) :- playerScore(S), S >= 150, NewS is S - 150, retract(playerScore(_)), assert(playerScore(NewS)),item(pepper,X), NewX is X + 1, retract(item(pepper,_)),assert(item(pepper,NewX)), write('You received one pepper! Now you have '),write(NewX),write(' peppers!'),nl,interact(3).
 	buy(3) :- playerScore(S), S >= 300, NewS is S - 300, retract(playerScore(_)), assert(playerScore(NewS)),item(blowtorch,X), NewX is X + 1, retract(item(blowtorch,_)),assert(item(blowtorch,NewX)), write('You received one blowtorch! Now you have '),write(NewX),write(' blowtorch!'),nl,interact(3).
 	buy(4) :- playerScore(S), S >= 500, NewS is S - 500, retract(playerScore(_)), assert(playerScore(NewS)),retractall(weapon(_)),assert(weapon('Metal Spatula')), write('You received a new weapon! '),nl,interact(3).
-	buy(5) :- write('Pleasure doing business with you!!'),nl, location(int). 
+	buy(5) :- write('Pleasure doing business with you!!'),nl,nl, location(int). 
 	buy(_) :- write('Not enought currency for this!!'),nl,interact(3). 
 	
 	townhall :- nl,
@@ -143,13 +143,13 @@
 	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp,scorestatus,nl,nl.
 	
 	%Neutral faction
-	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,get_single_char(_),write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
+	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,nl,random(1,101,X),event(X),get_single_char(_),nl,write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%Ice faction
-	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),nl,write('Section 2-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,get_single_char(_),write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
+	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),nl,write('Section 2-1: Event 1'),nl,nl,random(1,101,X),event(X),get_single_char(_),nl,write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%Fire faction
-	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),nl,write('Section 3-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,get_single_char(_),write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
+	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),nl,write('Section 3-1: Event 1'),nl,nl,random(1,101,X),event(X),get_single_char(_),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%HP
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
@@ -165,7 +165,7 @@
 	%item
 	use(potion) :- item(potion,0),nl, write('You have no tomato juice left'),nl.
 	use(potion) :- item(potion,X), X > 0, NewX is X - 1, retractall(item(potion,_)), assert(item(potion,NewX)), retractall(hp(_)), assert(hp(healthy)),nl,
-		       write('1 tomato juice used, player health recovered to healthy !'),nl,
+		       write('1 tomato juice used, player health recovered to healthy !'),nl,(burn(yes),retract(burn(_)),assert(burn(no)),write('Burn Status removed!')),nl,
 		       write(NewX), write(' tomato juice left'),nl.
 	use(pepper) :- item(pepper,0),nl,write('You have no pepper left'),nl.
 	use(pepper) :- item(pepper,X), X > 0, NewX is X - 1, retractall(item(pepper,_)), assert(item(pepper,NewX)), retractall(sneeze(_)),assert(sneeze(yes)),nl,enemy(_,Name,_),
@@ -190,7 +190,7 @@
 	enemyattack('Meatball',X) :- X > 40, write('Meatball attack!     Player hp - 1'), nl,nl, deducthp.
 	enemyattack('Tarrot',X) :- X > 15,X =< 45, write('Tarrot card attack!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Tarrot',X) :- X > 45, write('Tarrot pull out its regen card !     Tarrot hp + 1'),nl,nl,enemy(Type,Name,Hp), Newhp is Hp + 1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
-	enemyattack('Crying Onion',X) :- X > 20, write('Crying Onion makes you sad!     Player hp - 1 from sadness'),nl,nl,deducthp.
+	enemyattack('Crying Onion',X) :- X > 60, write('Crying Onion makes you sad!     Player hp - 1 from sadness'),nl,nl,deducthp.
 	enemyattack('Caesar Salad', X) :- X > 60, write('Caesar Salad attacks!     Player hp - 2'),nl,nl,deducthp,deducthp.
 	enemyattack('Spaghetti Regretti',_) :- round(X) ,X \= 4, write('Spaghetti Regretti attack!     Player hp - 1'),nl,nl,deducthp,retractall(round(_)), NewX is X + 1, assert(round(NewX)).
 	enemyattack('Spaghetti Regretti',_) :- round(4), write('Spaghetti Regretti performs a double attack!     Player hp - 2'),nl,nl,deducthp,deducthp,retractall(round(_)), assert(round(1)).
@@ -200,7 +200,7 @@
 	enemyattack('Ice Cube',X) :- X >= 60 ,X =< 80, write('Ice Cube freezes you this turn!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
 	enemyattack('Vanilla Shake', X) :- X =< 45 , X >= 25, write('Vanilla Shake dances all over you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Vanilla Shake', X) :- X >= 46, X =< 66, write('Vanilla Shake freezes you!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
-	enemyattack('Triple Scope', X) :- X >= 50, X =< 70, write('Triple Scope snipes you!     Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Triple Scope', X) :- X >= 40, X =< 70, write('Triple Scope snipes you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Triple Scope', X) :- X >= 71, X =< 91, write('Triple Scope headshots you!     Player hp - 2'),nl,nl,deducthp,deducthp.
 	enemyattack('Banana Skit', X) :- X >= 60, X =< 80, write('Banana Skit throws his cream at you!     Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Banana Skit', X) :- X >= 39, X =< 59, write('Banana Skit tells you a joke and you laughed!     Player hp - 1'),retract(playerstun(_)),assert(playerstun(yes)),nl,nl,deducthp.
@@ -213,9 +213,9 @@
 	enemyattack('Pomegrenade',_) :- round(Y), Y = 3, write('Pomegrenade is going explode next round!').
 	enemyattack('Pomegrenade',_) :- round(Y), NewY is Y + 1, write('Pomegrenade is getting ready to explode!'), retract(round(_)),assert(round(NewY)).
 	enemyattack('Stupendous Soup', X) :- X > 80, X =< 100, write('Stupendous Soup spills hot soup at you!'),nl,write('It tastes impressive but it is too hot and it burned you!     Player hp - 1'),retract(burn(_)),assert(burn(yes)),nl,nl,deducthp.
-	enemyattack('Stupendous Soup', X) :- X > 40, X =< 80, write('Stupendous Soup hits you with his spoon!    Player hp - 1'),nl,nl,deducthp.
-	enemyattack('Pineapple Pizza', X) :- X > 20, X =< 100, write('Pineapple Pizza shoots hot melted cheese on you! '),nl,write('It burns your skin!     Player hp - 1'),nl,nl,retract(burn(_)),assert(burn(yes)),deducthp.
-	enemyattack('Pineapple Pizza', X) :- X >= 0, X =< 20,write('Pineapple Pizza flung itself at you!    Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Stupendous Soup', X) :- X > 49, X =< 80, write('Stupendous Soup hits you with his spoon!    Player hp - 1'),nl,nl,deducthp.
+	enemyattack('Pineapple Pizza', X) :- X >= 80, X =< 100, write('Pineapple Pizza shoots hot melted cheese on you! '),nl,write('It burns your skin!     Player hp - 1'),nl,nl,retract(burn(_)),assert(burn(yes)),deducthp.
+	enemyattack('Pineapple Pizza', X) :- X >=49 , X =< 79,write('Pineapple Pizza flung itself at you!    Player hp - 1'),nl,nl,deducthp.
 	enemyattack('French Flies', X) :- X > 40, X =< 80, write('A Swarm of French Flies charged you!    Player hp - 1'),nl,nl,deducthp.
 	enemyattack('Dai Bao', X) :- X > 30, X =< 100, write('Dai Bao slams on you!     Player hp - 1'),nl,nl,deducthp.
 		
@@ -250,7 +250,7 @@
 	battle :- (hp(die);enemy(_,_,Y), Y =< 0),result.
 
 	fight(X) :- playerloc(Place), X =< 50, random(1,5,Y),encounter(Y,Place).
-	fight(_) :- playerloc(Place),nl, write('Boss fight time!'),bossfight(Place).
+	fight(_) :- playerloc(Place),nl,bossfight(Place).
 
 	encounter(1,neutral) :- fightmeatball.
 	encounter(2,neutral) :- fighttarrot.
@@ -267,7 +267,7 @@
 
 	fightmeatball :- write('A wild meatball appears !'),assert(enemy(neutral,'Meatball',6)),nl,nl,battlestatus,nl, battle.
 	fighttarrot :- write('A wild tarrot appears !'),assert(enemy(neutral,'Tarrot',3)),nl,nl,battlestatus,nl,battle.
-	fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',6)),nl,nl,battlestatus,nl,battle.
+	fightonion :- write('A crying onion appears ?'),assert(enemy(neutral,'Crying Onion',4)),nl,nl,battlestatus,nl,battle.
 	fightsalad :- write('A Caesar Salad appears !'), assert(enemy(neutral,'Caesar Salad',4)),nl,nl,battlestatus,nl,battle.
 	fighticecube :- write('A Ice Cube appears !'), assert(enemy(ice,'Ice Cube', 3)),nl,nl,battlestatus,nl,battle.
 	fightvanilla :- write('A Vanilla Shake appears !'),nl,write('It seems ready to have a dance off against you!'), assert(enemy(ice,'Vanilla Shake', 5)),nl,nl,battlestatus,nl,battle.
@@ -291,7 +291,7 @@
 			write('Your Choice : ').
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
-	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
+	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
 	action(a) :- burn(yes),nl, write('You took one burn damage'),nl,deducthp,\+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- hp(die),!.
 	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
@@ -299,24 +299,23 @@
 	action(t) :- use(potion), nl,chooseaction,read(X),action(X).
 	action(p) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
 	action(p) :- use(pepper), nl,chooseaction,read(X),action(X).
-	action(b) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
+	action(b) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
 	action(b) :- use(blowtorch),nl, battlestatus,nl,enemy(_,_,Hp), Hp > 0, chooseaction,read(X),action(X).
 	action(b) :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
 	action(_) :- \+hp(die),write('Invalid action, please try again'), nl, chooseaction,read(X) ,action(X).
 
-	enemyround :- sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
-	enemyround :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
-	enemyround :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
-	enemyround :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).
-	
-
 	result :- hp(die),retractall(enemy(_,_,_)),write('You die'),nl,gameover,end.
-	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),retractall(round(_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
-	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retractall(round(_)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,get_single_char(_),townhall.
+	result :- enemy(_,'Spaghetti Regretti',X), X =< 0, write('You defeated Spaghetti Regretti !  Stage clear !'),nl,nl,retract(hp(_)),retractall(round(_)),assert(hp(healthy)),score(boss),retractall(enemy(_,_,_)),assert(complete(neutral)),retract(playerloc(_)),assert(playerloc(town)),nl,get_single_char(_),townhall.
+	result :- enemy(_,'Frozen Tuna', X), X =< 0, write('You have defeated Frozen Tuna !   Stage clear !'),nl,nl,retract(hp(_)),assert(hp(healthy)),retract(round(_)),score(boss),retractall(enemy(_,_,_)),assert(complete(ice)),retract(playerloc(_)),assert(playerloc(town)),retract(hp(_)),assert(hp(healthy)),nl,get_single_char(_),townhall.
 	result :- stage(1), enemy(_,'Dai Bao',X), X =< 0,write('It seems like Dai Bao has split itself.... Oh no.'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao', 10)), retract(stage(_)), assert(stage(2)),battle.
 	result :- stage(2), enemy(_,'Dai Bao',X), X =< 0, write('Dai Bao seems wounded but it is still not giving up!!!'),nl,nl,retractall(enemy(_,_,_)),assert(enemy(boss,'Dai Bao',5)), retract(stage(3)), assert(stage(3)),battle.
 	result :- stage(3), enemy(_,'Dai Bao',X), X =< 0, write('You have finally defeated Dai Bao!!!'),nl,nl,score(boss),retractall(enemy(_,_,_)),retract(playerloc(_)),assert(playerloc(town)),ending.
-	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
+	result :- enemy(Type,Name,Hp), Hp =< 0, write('You defeated '), write(Name), write('! Good Job!'),nl,nl, random(1,101,X),loot(X),nl,score(Type),get_single_char(_),retractall(round(_)),retractall(enemy(_,_,_)),nl,random(1,101,Y),fight(Y),!.
+	
+	enemyround :- sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	enemyround :- enemy(_,_,Hp), Hp =< 0,retractall(sneeze(_)),retractall(stun(_)),retractall(burn(_)),assert(sneeze(no)),assert(stun(no)),assert(burn(no)),!.
+	enemyround :- sneeze(yes),enemy(_,Name,_),write(Name),write(' sneezed and missed its turn !'),nl,nl,retractall(sneeze(_)),assert(sneeze(no)).
+	enemyround :- stun(yes),enemy(_,Name,_),write(Name),write(' is stunned and missed its turn !'),nl,nl,retractall(stun(_)),assert(stun(no)).	
 
 	%Chest	
 	chest(can) :- nl,write('As you walk around the Violet Garden, you found a very peculiar looking Can with a keyhole on it'),nl,
@@ -382,12 +381,12 @@
 		       playerScore(Y), write('Player Score : '), write(Y),nl.
 
 	%Event
-	event(X) :- X > 10, X =< 30,write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl,scorestatus,get_single_char(_).
-	event(X) :- X > 30, X =< 50, \+item(potion,0),write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R),get_single_char(_).
-	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl,get_single_char(_).
-	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl,get_single_char(_).
-	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl,get_single_char(_).
-	event(_) :- write('You continued your journey without any interesting events happening...'),nl,get_single_char(_).
+	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl,scorestatus,nl,nl.
+	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R),nl,scorestatus,nl,nl,get_single_char(_).
+	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
+	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
+	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl.
+	event(_) :- write('You continued your journey without any interesting events happening...'),nl.
 
 	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
 	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
