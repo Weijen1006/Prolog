@@ -100,7 +100,7 @@
 	location(down) :- down(2),write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
 	location(_) :- write('Invalid Input, Please try again'),nl,nl,townhall.
 
-	ending :- write('You defeated all three areas!! Congratulations!!'),nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost.
+	ending :- write('You defeated all three areas!! Congratulations!!'),nl,write('Now Clemen has received all the ingredients from those three areas and can now cook amazing dishes to proof everyone in the town he is an awesome chef!'),nl,write('As time went on, Clemen open up a restaurant called Clementouille!!'),nl,nl,endingpost,nl,end.
 	ending1(yes) :- fakeending.
 	ending1(no) :- retractall(down(_)),assert(down(1)),chooselocation,read(X),location(X).
 	ending1(_) :- write('Invalid Input, Please try again'),nl,write('Are you really sure about that?? (yes/no) : '),read(X), ending1(X).
