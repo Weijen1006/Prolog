@@ -143,13 +143,13 @@
 	fortune(X,Y) :- X \= Y,nl, write('You got the fortune cookie wrong, it exploded!    Player hp-2'),nl,deducthp,deducthp,scorestatus,nl,nl.
 	
 	%Neutral faction
-	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,nl,random(1,101,X),event(X),get_single_char(_),nl,write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
+	neutral :- retract(playerloc(_)),assert(playerloc(neutral)),nl,write('Section 1-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),write('Section 1-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 1-3: Lootbox'),chest(can),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%Ice faction
-	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),nl,write('Section 2-1: Event 1'),nl,nl,random(1,101,X),event(X),get_single_char(_),nl,write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
+	ice :- retract(playerloc(_)), assert(playerloc(ice)),minigame(ice),nl,write('Section 2-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),nl,write('Section 2-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 2-3: Lootbox'),chest(crabshell),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%Fire faction
-	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),nl,write('Section 3-1: Event 1'),nl,nl,random(1,101,X),event(X),get_single_char(_),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
+	fire :- retract(playerloc(_)), assert(playerloc(fire)),minigame(fire),nl,write('Section 3-1: Event 1'),nl,random(1,101,X),event(X),nl,get_single_char(_),nl,write('Section 3-2: Event 2'),nl,random(1,101,Y),event(Y),nl,write('Section 3-3: Lootbox'),chest(wine),nl,write('You have entered a hostile zone! Get ready for battle!'),get_single_char(_),nl,fight(50).
 
 	%HP
 	deducthp :- hp(healthy), retractall(hp(_)), assert(hp(fresh)).
@@ -291,7 +291,7 @@
 			write('Your Choice : ').
 
 	action(i) :- itemList,nl,chooseaction,read(X),action(X).
-	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,sneeze(no),stun(no),enemy(_,Name,Hp), Hp > 0,get_single_char(_),random(1,101,Random), enemyattack(Name,Random),battlestatus,nl.
+	action(a) :- burn(no),playerstun(no),get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- burn(yes),nl, write('You took one burn damage'),nl,deducthp,\+hp(die), get_single_char(_),weapon(X), weaponattack(X),nl,battlestatus,nl,enemyround.
 	action(a) :- hp(die),!.
 	action(a) :- get_single_char(_),playerstun(yes),nl,write('You missed your turn...'),nl,nl,retract(playerstun(_)),assert(playerstun(no)), enemy(_,Name,Hp), Hp > 0, get_single_char(_), random(1,101,Random),enemyattack(Name,Random),battlestatus,nl.
@@ -381,12 +381,12 @@
 		       playerScore(Y), write('Player Score : '), write(Y),nl.
 
 	%Event
-	event(X) :- X > 10, X =< 30, write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl,scorestatus,nl,nl.
-	event(X) :- X > 30, X =< 50, \+item(potion,0), write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R),nl,scorestatus,nl,nl,get_single_char(_).
-	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl.
-	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl.
-	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl.
-	event(_) :- write('You continued your journey without any interesting events happening...'),nl.
+	event(X) :- X > 10, X =< 30,write('There is a crossroad left and right, a signboard is found there.'),nl,random(1,3,R),write('Your choice (left/right) : '),read(D),crossroad(D,R),nl,scorestatus,get_single_char(_).
+	event(X) :- X > 30, X =< 50, \+item(potion,0),write('You encounter some babarians along the way, some of your tomato juice has been snatched'),nl,random(1,4,R),snatch(R),get_single_char(_).
+	event(X) :- X > 50, X =< 70, item(co,no),playerloc(neutral), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(co,_)),assert(item(co,yes)),write('You obtained a Can Openner!'),nl,get_single_char(_).
+	event(X) :- X > 50, X =< 70, item(mt,no),playerloc(ice), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(mt,_)),assert(item(mt,yes)),write('You obtained a Meat Tenderizer!'),nl,get_single_char(_).
+	event(X) :- X > 50, X =< 70, item(corkscrew,no),playerloc(fire), write('You see something shinny on the floor, so you pick it up'),nl,retractall(item(corkscrew,_)),assert(item(corkscrew,yes)),write('You obtained a Corkscrew!'),nl,get_single_char(_).
+	event(_) :- write('You continued your journey without any interesting events happening...'),nl,get_single_char(_).
 
 	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
 	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
