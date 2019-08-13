@@ -26,6 +26,7 @@
 		 write('Breath in and breath out Clemen, you got this long journey ahead of you, said Clemen'),get_single_char(_),nl,
 		 write('You will be controlling Mr. Clemen here and guide him through out this adventure...'),get_single_char(_),nl,
 		 write('This... tasty adventure of his...'),get_single_char(_),nl,
+
 		 write('These are the default equipements carried by Clemen to his adventure...'),nl,itemList,get_single_char(_),nl.
 
 	poster :- 
@@ -252,7 +253,7 @@
 	battle :- (hp(die);enemy(_,_,Y), Y =< 0),result.
 
 	fight(X) :- playerloc(Place), X =< 50, random(1,5,Y),encounter(Y,Place).
-	fight(_) :- playerloc(Place),nl,bossfight(Place).
+	fight(X) :- X > 50,playerloc(Place),nl,bossfight(Place).
 
 	encounter(1,neutral) :- fightmeatball.
 	encounter(2,neutral) :- fighttarrot.
@@ -392,8 +393,8 @@
 	event(_) :- write('You continued your journey without any interesting events happening...'),nl,get_single_char(_).
 
 	crossroad(left,1) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
-	crossroad(right,1) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
-	crossroad(left,2) :-  write('Walking on the pathway, you see something shiny on the ground, you found one HP potion!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
+	crossroad(right,1) :- write('Walking on the pathway, you see something shiny on the ground, you found 1 tomato juice!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
+	crossroad(left,2) :- write('Walking on the pathway, you see something shiny on the ground, you found 1 tomato juice!'), item(potion,X), NewX is X + 1, retractall(item(potion,_)), assert(item(potion,NewX)),nl.
 	crossroad(right,2) :- write('You walked into a dangerous path full of spiky vines. You took one damage!'), deducthp,nl.
 	crossroad(_,Y) :- write('Please enter only left or right!'),nl,write('Your choice (left/right) : '), read(X), crossroad(X,Y).	
 
