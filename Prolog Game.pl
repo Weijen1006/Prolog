@@ -27,7 +27,7 @@
 		 write('You will be controlling Mr. Clemen here and guide him through out this adventure...'),get_single_char(_),nl,
 		 write('This... tasty adventure of his...'),get_single_char(_),nl,
 
-		 write('These are the default equipements carried by Clemen to his adventure...'),nl,itemList,get_single_char(_),nl.
+		 write('These are the default equipements carried by Clemen for his adventure...'),nl,itemList,get_single_char(_),nl.
 
 	poster :- 
 	write(' #######                                 #                                                                                #####                                     '),nl,
@@ -236,9 +236,13 @@
 	metalspatula(X) :- X > 25,nl, write('Its a direct hit! 1 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-1, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	icecreamscoop(X) :- X > 25, enemy(ice,_,_),nl,write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	icecreamscoop(X) :- X > 25, enemy(boss,'Frozen Tuna',_), nl, write('Its super effective! 2 damage dealt'), nl, enemy(Type,Name,Hp), Newhp is Hp - 2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	icecreamscoop(X) :- X =< 25,nl,enemy(boss,'Frozen Tuna',_), write('Your attack missed!'),nl.
+	icecreamscoop(X) :- X =< 25,nl,enemy(ice,_,_), write('Your attack missed!'),nl.
 	icecreamscoop(X) :- \+enemy(ice,_,_),metalspatula(X).
 	chopstick(X) :- X > 25, enemy(fire,_,_), nl, write('Its super effective! 2 damage dealt'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
 	chopstick(X) :- X > 25, enemy(boss,'Dai Bao',_), nl, write('Its super effective! 3 damage dealt'), nl, enemy(Type,Name,Hp), Newhp is Hp - 3, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
+	chopstick(X) :- X =< 25,nl,enemy(fire,_,_), write('Your attack missed!'),nl.
+	chopstick(X) :- X =< 25,nl,enemy(boss,'Dai Bao',_), write('Your attack missed!'),nl.
 	chopstick(X) :- \+enemy(fire,_,_),metalspatula(X).
 	fryingpan(boss,X) :- X =< 30,nl,write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)),retract(stun(_)),assert(stun(yes)),write('You have stunned the enemy'),nl.
 	fryingpan(boss,X) :- X > 30,nl, write('Its a direct hit!'),nl, enemy(Type,Name,Hp), Newhp is Hp-2, retractall(enemy(_,_,_)), assert(enemy(Type,Name,Newhp)).
