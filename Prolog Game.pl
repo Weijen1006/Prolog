@@ -210,7 +210,7 @@
 	
 	%Fire Area
 	enemyattack('Pomegrenade',_) :- round(4), write('Pomegrenade exploded and killed you!'),nl,nl,retract(hp(_)),assert(hp(die)).
-	enemyattack('Pomegrenade',_) :- round(3), write('Pomegrenade is going explode next round!'),nl,nl.
+	enemyattack('Pomegrenade',_) :- round(3), write('Pomegrenade is going explode next round!'),retract(round(_)),assert(round(4)),nl,nl.
 	enemyattack('Pomegrenade',_) :- round(Y), NewY is Y + 1, write('Pomegrenade is getting ready to explode!'),nl,nl, retract(round(_)),assert(round(NewY)).
 	enemyattack('Stupendous Soup', X) :- X > 80, X =< 100, write('Stupendous Soup spills hot soup at you!'),nl,write('It tastes impressive but it is too hot and it burned you!     Player hp - 1'),retract(burn(_)),assert(burn(yes)),nl,nl,deducthp.
 	enemyattack('Stupendous Soup', X) :- X > 49, X =< 80, write('Stupendous Soup hits you with his spoon!    Player hp - 1'),nl,nl,deducthp.
