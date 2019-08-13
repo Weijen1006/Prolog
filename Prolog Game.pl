@@ -25,7 +25,8 @@
 		 write('And there he goes, on his way to open a new restaurant in a place called Calamity Town...'),get_single_char(_),nl,
 		 write('Breath in and breath out Clemen, you got this long journey ahead of you, said Clemen'),get_single_char(_),nl,
 		 write('You will be controlling Mr. Clemen here and guide him through out this adventure...'),get_single_char(_),nl,
-		 write('This... tasty adventure of his...'),get_single_char(_),nl.
+		 write('This... tasty adventure of his...'),get_single_char(_),nl,
+		 write('These are the default equipements carried by Clemen to his adventure...'),nl,itemList,get_single_char(_),nl.
 
 	poster :- 
 	write(' #######                                 #                                                                                #####                                     '),nl,
